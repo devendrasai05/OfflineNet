@@ -1,0 +1,22 @@
+{
+  "name": "offlinenet",
+  "version": "1.0.0",
+  "description": "OfflineNet - A decentralized offline internet platform",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "electron",
+    "offlinenet",
+    "offline",
+    "chat",
+    "lan"
+  ],
+  "author": "Devendra Sai K",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^43.1.1"
+  }
+}

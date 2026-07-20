@@ -1,0 +1,48 @@
+# Day 0 – Project Foundation & Environment Setup
+
+## Date
+11 July 2026
+
+## Objectives Completed
+
+- Understood the OfflineNet project vision.
+- Understood the high-level architecture.
+- Created the project workspace.
+- Installed VS Code.
+- Installed Git.
+- Installed Node.js.
+- Installed PostgreSQL.
+- Installed Docker Desktop.
+- Installed Postman.
+- Created the GitHub repository.
+
+## Problems Encountered
+
+- Docker Desktop could not start because WSL was not installed.
+
+## Solutions
+
+- Installed WSL 2.
+- Installed Ubuntu.
+- Restarted the computer.
+- Verified Docker using `docker run hello-world`.
+
+## Concepts Learned
+
+- Browser vs Backend
+- Database
+- Docker
+- WSL
+- Git vs GitHub
+- PostgreSQL
+- Node.js
+
+## Questions for Tomorrow
+
+- What exactly is programming?
+- Why is JavaScript used for both frontend and backend?
+- How does a computer execute code?
+
+## Overall Progress
+
+✅ Day 0 completed successfully.
