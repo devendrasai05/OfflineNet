@@ -4,8 +4,11 @@
   "description": "OfflineNet - A decentralized offline internet platform",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
-  },
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "start": "electron ."
+},
   "keywords": [
     "electron",
     "offlinenet",
@@ -17,6 +20,12 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "electron": "^43.1.1"
+    "@vitejs/plugin-react": "^6.0.3",
+    "electron": "^43.1.1",
+    "vite": "^8.1.5"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   }
 }
