@@ -46,3 +46,30 @@ body,
   padding: 30px;
   overflow: auto;
 }
+
+.sidebar-menu {
+  list-style: none;
+}
+
+.sidebar-menu li {
+  margin-bottom: 10px;
+}
+
+.sidebar-menu a {
+  display: block;
+  padding: 10px 14px;
+  color: #d4d4d4;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-menu a:hover {
+  background-color: #37373d;
+}
+
+.sidebar-menu a.active {
+  background-color: #0078d4;
+  color: white;
+  font-weight: 600;
+}

@@ -1,4 +1,5 @@
 import Header from "../navigation/Header";
+import Sidebar from "../navigation/Sidebar";
 
 function MainLayout({ children }) {
   return (
@@ -6,9 +7,7 @@ function MainLayout({ children }) {
       <Header />
 
       <div className="app-body">
-        <aside className="app-sidebar">
-          Sidebar
-        </aside>
+        <Sidebar />
 
         <main className="app-content">
           {children}
