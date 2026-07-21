@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
@@ -9,7 +10,13 @@ import {
   validatePassword,
 } from "../../utils/validation";
 
+import { useAuth } from "../../context/AuthContext";
+
 function Login() {
+  const navigate = useNavigate();
+
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,10 +38,13 @@ function Login() {
       return;
     }
 
-    console.log({
+    login({
+      id: 1,
+      name: "Demo User",
       email,
-      password,
     });
+
+    navigate("/");
   };
 
   return (
@@ -82,16 +92,13 @@ function Login() {
             error={errors.password}
           />
 
-          <Button
-            size="large"
-            onClick={handleLogin}
-          >
+          <Button size="large" onClick={handleLogin}>
             Login
           </Button>
 
           <p className="login-footer">
             Don't have an account?{" "}
-            <a href="/register">Register</a>
+            <Link to="/register">Register</Link>
           </p>
         </div>
       </Card>

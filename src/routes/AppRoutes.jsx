@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Chat from "../pages/Chat/Chat";
@@ -17,14 +18,21 @@ import Register from "../pages/Register/Register";
 function AppRoutes() {
   return (
     <Routes>
-      {/* Authentication Routes */}
+      {/* Public Routes */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Route>
 
-      {/* Application Routes */}
-      <Route path="/" element={<MainLayout />}>
+      {/* Protected Routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<Dashboard />} />
         <Route path="chat" element={<Chat />} />
         <Route path="files" element={<Files />} />
