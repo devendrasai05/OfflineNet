@@ -1,0 +1,74 @@
+/* ===========================
+   Authentication Layout
+=========================== */
+
+.auth-layout {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: var(--space-8);
+
+  background: var(--color-background);
+}
+
+/* ===========================
+   Login Page
+=========================== */
+
+.login-page {
+  width: 100%;
+  max-width: 450px;
+}
+
+.login-card h1 {
+  margin-bottom: var(--space-2);
+
+  text-align: center;
+}
+
+.login-card p {
+  margin-bottom: var(--space-8);
+
+  text-align: center;
+
+  color: var(--color-text-light);
+}
+
+/* ===========================
+   Login Form
+=========================== */
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  margin-top: var(--space-8);
+}
+
+.login-form label {
+  font-weight: 600;
+}
+
+.login-form .button {
+  margin-top: var(--space-4);
+  width: 100%;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: var(--space-4);
+}
+
+.login-footer a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}

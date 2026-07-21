@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../components/layout/MainLayout";
+import AuthLayout from "../components/layout/AuthLayout";
 
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Chat from "../pages/Chat/Chat";
@@ -16,6 +17,13 @@ import Register from "../pages/Register/Register";
 function AppRoutes() {
   return (
     <Routes>
+      {/* Authentication Routes */}
+      <Route element={<AuthLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+
+      {/* Application Routes */}
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="chat" element={<Chat />} />
@@ -25,9 +33,6 @@ function AppRoutes() {
         <Route path="admin" element={<Admin />} />
         <Route path="settings" element={<Settings />} />
       </Route>
-
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
     </Routes>
   );
 }
