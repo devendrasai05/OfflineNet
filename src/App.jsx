@@ -8,80 +8,27 @@ import Files from "./pages/Files/Files";
 import Forum from "./pages/Forum/Forum";
 import Search from "./pages/Search/Search";
 import Admin from "./pages/Admin/Admin";
+import Settings from "./pages/Settings/Settings";
 
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
-import Settings from "./pages/Settings/Settings";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Application Layout */}
-        <Route
-          path="/"
-          element={
-            <MainLayout>
-              <Dashboard />
-            </MainLayout>
-          }
-        />
+        {/* Routes with Main Layout */}
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="chat" element={<Chat />} />
+          <Route path="files" element={<Files />} />
+          <Route path="forum" element={<Forum />} />
+          <Route path="search" element={<Search />} />
+          <Route path="admin" element={<Admin />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
 
-        <Route
-          path="/chat"
-          element={
-            <MainLayout>
-              <Chat />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/files"
-          element={
-            <MainLayout>
-              <Files />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/forum"
-          element={
-            <MainLayout>
-              <Forum />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/search"
-          element={
-            <MainLayout>
-              <Search />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/admin"
-          element={
-            <MainLayout>
-              <Admin />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/settings"
-          element={
-            <MainLayout>
-              <Settings />
-            </MainLayout>
-          }
-        />
-
-        {/* Authentication Pages */}
+        {/* Authentication Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>
