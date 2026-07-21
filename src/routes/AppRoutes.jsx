@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
+import PublicRoute from "../components/auth/PublicRoute";
 
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Chat from "../pages/Chat/Chat";
@@ -19,10 +20,16 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route element={<AuthLayout />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
+      <Route
+  element={
+    <PublicRoute>
+      <AuthLayout />
+    </PublicRoute>
+  }
+>
+  <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
+</Route>
 
       {/* Protected Routes */}
       <Route
