@@ -13,10 +13,14 @@ function Header() {
 
   return (
     <header className="app-header">
-      <h2>OfflineNet</h2>
+      <div className="header-logo">
+        <h2>OfflineNet</h2>
+      </div>
 
       <div className="header-actions">
-        <span>Welcome, {user?.name}</span>
+        <span className="header-user">
+          Welcome, {user?.name}
+        </span>
 
         <Button onClick={handleLogout}>
           Logout

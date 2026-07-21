@@ -1,12 +1,45 @@
 import { NavLink } from "react-router-dom";
 
+import {
+  FaHome,
+  FaComments,
+  FaFolderOpen,
+  FaUsers,
+  FaSearch,
+  FaUserShield,
+} from "react-icons/fa";
+
 const menuItems = [
-  { path: "/", label: "Dashboard" },
-  { path: "/chat", label: "Chat" },
-  { path: "/files", label: "Files" },
-  { path: "/forum", label: "Forum" },
-  { path: "/search", label: "Search" },
-  { path: "/admin", label: "Admin" },
+  {
+    path: "/",
+    label: "Dashboard",
+    icon: <FaHome />,
+  },
+  {
+    path: "/chat",
+    label: "Chat",
+    icon: <FaComments />,
+  },
+  {
+    path: "/files",
+    label: "Files",
+    icon: <FaFolderOpen />,
+  },
+  {
+    path: "/forum",
+    label: "Forum",
+    icon: <FaUsers />,
+  },
+  {
+    path: "/search",
+    label: "Search",
+    icon: <FaSearch />,
+  },
+  {
+    path: "/admin",
+    label: "Admin",
+    icon: <FaUserShield />,
+  },
 ];
 
 function Sidebar() {
@@ -16,8 +49,20 @@ function Sidebar() {
         <ul className="sidebar-menu">
           {menuItems.map((item) => (
             <li key={item.path}>
-              <NavLink to={item.path}>
-                {item.label}
+              <NavLink
+                to={item.path}
+                end={item.path === "/"}
+                className={({ isActive }) =>
+                  isActive
+                    ? "sidebar-link active"
+                    : "sidebar-link"
+                }
+              >
+                <span className="sidebar-icon">
+                  {item.icon}
+                </span>
+
+                <span>{item.label}</span>
               </NavLink>
             </li>
           ))}
