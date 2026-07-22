@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
 
 export const registerUser = async (userData) => {
@@ -8,6 +9,8 @@ export const registerUser = async (userData) => {
   if (!username || !email || !password) {
     throw new Error("All fields are required");
   }
+
+
 
   // 2. Check if email already exists
   const existingEmail = await prisma.user.findUnique({
@@ -53,6 +56,52 @@ export const registerUser = async (userData) => {
       email: user.email,
       role: user.role,
       createdAt: user.createdAt,
+    },
+  };
+};  
+
+export const loginUser = async (userData) => {
+  const { email, password } = userData;
+
+  if (!email || !password) {
+    throw new Error("Email and password are required");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new Error("Invalid email or password");
+  }
+
+  const token = jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
+
+  return {
+    success: true,
+    message: "Login successful",
+    token,
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
     },
   };
 };
