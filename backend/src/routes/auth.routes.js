@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { register, login } from "../controllers/auth.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { authorize } from "../middleware/authorize.middleware.js";
 
 const router = Router();
 
@@ -21,5 +22,18 @@ router.get("/profile", authenticate, (req, res) => {
     user: req.user,
   });
 });
+
+router.get(
+  "/admin",
+  authenticate,
+  authorize("ADMIN"),
+  (req, res) => {
+    res.json({
+      success: true,
+      message: "Welcome Admin",
+      user: req.user,
+    });
+  }
+);
 
 export default router;
