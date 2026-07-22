@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import FormField from "../../components/ui/FormField";
+import { loginUser } from "../../services/auth.service.js";
 
 import {
   validateEmail,
@@ -25,27 +26,31 @@ function Login() {
     password: "",
   });
 
-  const handleLogin = () => {
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
+  const handleLogin = async () => {
+  const emailError = validateEmail(email);
+  const passwordError = validatePassword(password);
 
-    setErrors({
-      email: emailError,
-      password: passwordError,
-    });
+  setErrors({
+    email: emailError,
+    password: passwordError,
+  });
 
-    if (emailError || passwordError) {
-      return;
-    }
+  if (emailError || passwordError) {
+    return;
+  }
 
-    login({
-      id: 1,
-      name: "Demo User",
-      email,
-    });
+  try {
+    const response = await loginUser(email, password);
+
+    localStorage.setItem("offlinenet-token", response.token);
+
+    login(response.user);
 
     navigate("/");
-  };
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
   return (
     <div className="login-page">

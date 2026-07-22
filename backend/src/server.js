@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import http from "http";
-import { Server } from "socket.io";
+import { initializeSocket } from "./socket/socket.js";
 import app from "./app.js";
 
 dotenv.config();
@@ -11,21 +11,7 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
 // Create Socket.IO server
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
-
-// Test connection
-io.on("connection", (socket) => {
-  console.log(`✅ User connected: ${socket.id}`);
-
-  socket.on("disconnect", () => {
-    console.log(`❌ User disconnected: ${socket.id}`);
-  });
-});
+initializeSocket(server);
 
 // Start server
 server.listen(PORT, () => {

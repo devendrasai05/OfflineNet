@@ -1,8 +1,11 @@
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5000";
+const token = localStorage.getItem("token");
 
-export const socket = io(SOCKET_URL, {
+export const socket = io("http://localhost:5000", {
   autoConnect: true,
   transports: ["websocket"],
+  auth: {
+    token,
+  },
 });
