@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import FormField from "../../components/ui/FormField";
-import { loginUser } from "../../services/auth.service.js";
 
 import {
   validateEmail,
@@ -12,10 +11,11 @@ import {
 } from "../../utils/validation";
 
 import { useAuth } from "../../context/AuthContext";
+import { loginUser } from "../../services/auth.service.js";
+import { connectSocket } from "../../lib/socket";
 
 function Login() {
   const navigate = useNavigate();
-
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -27,30 +27,35 @@ function Login() {
   });
 
   const handleLogin = async () => {
-  const emailError = validateEmail(email);
-  const passwordError = validatePassword(password);
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
 
-  setErrors({
-    email: emailError,
-    password: passwordError,
-  });
+    setErrors({
+      email: emailError,
+      password: passwordError,
+    });
 
-  if (emailError || passwordError) {
-    return;
-  }
+    if (emailError || passwordError) {
+      return;
+    }
 
-  try {
-    const response = await loginUser(email, password);
+    try {
+      const response = await loginUser(email, password);
 
-    localStorage.setItem("offlinenet-token", response.token);
+      localStorage.setItem(
+        "offlinenet-token",
+        response.token
+      );
 
-    login(response.user);
+      connectSocket(response.token);
 
-    navigate("/");
-  } catch (error) {
-    alert(error.message);
-  }
-};
+      login(response.user);
+
+      navigate("/");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <div className="login-page">
