@@ -11,9 +11,7 @@ import "./styles/components.css";
 import "./styles/pages.css";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </StrictMode>
+  <AuthProvider>
+  <App />
+</AuthProvider>
 );

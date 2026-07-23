@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
@@ -9,29 +10,33 @@ import {
   validatePassword,
 } from "../../utils/validation";
 
+import { registerUser } from "../../services/auth.service";
+
 function Register() {
-  const [fullName, setFullName] = useState("");
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [errors, setErrors] = useState({
-    fullName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const newErrors = {
-      fullName: "",
+      username: "",
       email: validateEmail(email),
       password: validatePassword(password),
       confirmPassword: "",
     };
 
-    if (!fullName.trim()) {
-      newErrors.fullName = "Full name is required.";
+    if (!username.trim()) {
+      newErrors.username = "Username is required.";
     }
 
     if (!confirmPassword.trim()) {
@@ -50,12 +55,19 @@ function Register() {
       return;
     }
 
-    console.log({
-      fullName,
-      email,
-      password,
-      confirmPassword,
-    });
+    try {
+      const response = await registerUser({
+        username,
+        email,
+        password,
+      });
+
+      alert(response.message);
+
+      navigate("/login");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -66,21 +78,21 @@ function Register() {
 
         <div className="login-form">
           <FormField
-            label="Full Name"
-            id="fullName"
-            placeholder="Enter your full name"
-            value={fullName}
+            label="Username"
+            id="username"
+            placeholder="Enter your username"
+            value={username}
             onChange={(e) => {
-              setFullName(e.target.value);
+              setUsername(e.target.value);
 
-              if (errors.fullName) {
+              if (errors.username) {
                 setErrors((prev) => ({
                   ...prev,
-                  fullName: "",
+                  username: "",
                 }));
               }
             }}
-            error={errors.fullName}
+            error={errors.username}
           />
 
           <FormField
@@ -148,7 +160,8 @@ function Register() {
           </Button>
 
           <p className="login-footer">
-            Already have an account? <a href="/login">Login</a>
+            Already have an account?{" "}
+            <a href="/login">Login</a>
           </p>
         </div>
       </Card>

@@ -33,6 +33,7 @@ function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem("offlinenet-user");
+    localStorage.removeItem("offlinenet-token");
     setUser(null);
   };
 
