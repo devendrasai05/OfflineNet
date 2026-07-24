@@ -39,11 +39,22 @@ function Chat() {
   const handleSelectUser = async (user) => {
   setSelectedUser(user);
 
+  // Clear unread badge immediately
+  setUsers((prevUsers) =>
+    prevUsers.map((u) =>
+      u.id === user.id
+        ? {
+            ...u,
+            unreadCount: 0,
+          }
+        : u
+    )
+  );
+
   try {
     const conversation = await getConversation(user.id);
     setMessages(conversation);
 
-    // Notify the server that we've seen this user's messages
     socket.emit("mark-seen", {
       senderId: user.id,
     });
@@ -82,34 +93,47 @@ useEffect(() => {
 
   // Update sidebar preview and move conversation to the top
   setUsers((prevUsers) => {
-    const updatedUsers = prevUsers.map((user) => {
-      if (
-        user.id === message.senderId ||
-        user.id === message.receiverId
-      ) {
-        return {
-          ...user,
-          lastMessage: message.message,
-          lastMessageSenderId: message.senderId,
-          lastMessageTime: message.createdAt,
-        };
-      }
+  const updatedUsers = prevUsers.map((user) => {
+    if (
+      user.id === message.senderId ||
+      user.id === message.receiverId
+    ) {
+      const isIncoming =
+        message.senderId === user.id &&
+        message.receiverId === currentUser?.id;
 
-      return user;
-    });
+      const chatOpen =
+        selectedUser?.id === user.id;
 
-    updatedUsers.sort((a, b) => {
-      if (!a.lastMessageTime) return 1;
-      if (!b.lastMessageTime) return -1;
+      return {
+        ...user,
+        lastMessage: message.message,
+        lastMessageSenderId: message.senderId,
+        lastMessageTime: message.createdAt,
 
-      return (
-        new Date(b.lastMessageTime) -
-        new Date(a.lastMessageTime)
-      );
-    });
+        unreadCount: isIncoming
+          ? chatOpen
+            ? 0
+            : (user.unreadCount || 0) + 1
+          : user.unreadCount,
+      };
+    }
 
-    return updatedUsers;
+    return user;
   });
+
+  updatedUsers.sort((a, b) => {
+    if (!a.lastMessageTime) return 1;
+    if (!b.lastMessageTime) return -1;
+
+    return (
+      new Date(b.lastMessageTime) -
+      new Date(a.lastMessageTime)
+    );
+  });
+
+  return updatedUsers;
+});
 };
 
   const handleTyping = ({ senderId }) => {
@@ -218,16 +242,30 @@ return () => {
 
               <div className="chat-user-details">
                 <div className="chat-user-top">
-                  <h4>{user.username}</h4>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <h4>{user.username}</h4>
 
-                  <span
-                    className={
-                      onlineUsers.includes(user.id)
-                        ? "status-dot online"
-                        : "status-dot offline"
-                    }
-                  />
-                </div>
+                        <span
+                          className={
+                            onlineUsers.includes(user.id)
+                              ? "status-dot online"
+                              : "status-dot offline"
+                          }
+                        />
+                      </div>
+
+                      {user.unreadCount > 0 && (
+                        <span className="unread-badge">
+                          {user.unreadCount}
+                        </span>
+                      )}
+                    </div>
 
                 <p className="chat-user-subtitle">
                   {user.lastMessage ? (

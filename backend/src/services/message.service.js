@@ -67,11 +67,20 @@ export const getSidebarConversations = async (currentUserId) => {
         },
       });
 
+      const unreadCount = await prisma.message.count({
+        where: {
+          senderId: user.id,
+          receiverId: currentUserId,
+          seen: false,
+        },
+      });
+
       return {
         ...user,
         lastMessage: lastMessage?.message ?? null,
         lastMessageSenderId: lastMessage?.senderId ?? null,
         lastMessageTime: lastMessage?.createdAt ?? null,
+        unreadCount,
       };
     })
   );
