@@ -9,6 +9,14 @@ function App() {
   const { setOnlineUsers } = useAuth();
 
   useEffect(() => {
+    // Reconnect socket if user is already logged in
+    const token = localStorage.getItem("offlinenet-token");
+
+    if (token && !socket.connected) {
+      socket.auth = { token };
+      socket.connect();
+    }
+
     const handleConnect = () => {
       console.log("✅ Connected:", socket.id);
     };

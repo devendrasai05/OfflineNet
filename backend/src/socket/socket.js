@@ -8,7 +8,10 @@ import {
   getUserSocket,
 } from "./onlineUsers.js";
 
-import { createMessage } from "../services/message.service.js";
+import {
+  createMessage,
+  markMessagesAsSeen,
+} from "../services/message.service.js";
 
 export const initializeSocket = (server) => {
   const io = new Server(server, {
@@ -73,11 +76,52 @@ export const initializeSocket = (server) => {
         }
 
         // Send the message back to the sender too
-socket.emit("receive-message", savedMessage);
+        socket.emit("receive-message", savedMessage);
       } catch (error) {
         console.error("❌ Error saving message:", error);
       }
     });
+
+        // Handle typing indicator
+    socket.on("typing", ({ receiverId }) => {
+      const receiverSocketId = getUserSocket(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("typing", {
+          senderId: socket.user.id,
+        });
+      }
+    });
+
+    // Handle stop typing
+    socket.on("stop-typing", ({ receiverId }) => {
+      const receiverSocketId = getUserSocket(receiverId);
+
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("stop-typing", {
+          senderId: socket.user.id,
+        });
+      }
+    });
+
+    // Handle marking messages as seen
+socket.on("mark-seen", async ({ senderId }) => {
+  try {
+    // Update database
+    await markMessagesAsSeen(senderId, socket.user.id);
+
+    // Notify original sender (if online)
+    const senderSocketId = getUserSocket(senderId);
+
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("messages-seen", {
+        seenBy: socket.user.id,
+      });
+    }
+  } catch (error) {
+    console.error("❌ Error marking messages as seen:", error);
+  }
+});
 
     // Handle disconnect
     socket.on("disconnect", () => {
