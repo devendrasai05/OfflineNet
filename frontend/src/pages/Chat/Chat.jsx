@@ -1,7 +1,7 @@
 import { socket } from "../../lib/socket";
 import { useAuth } from "../../context/AuthContext";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./Chat.css";
 
 import {
@@ -25,6 +25,7 @@ function Chat() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const messagesEndRef = useRef(null);
 
   // Load all users
   useEffect(() => {
@@ -75,7 +76,18 @@ function Chat() {
     };
   }, [selectedUser, currentUser]);
 
+  useEffect(() => {
+  messagesEndRef.current?.scrollIntoView({
+    behavior: "smooth",
+  });
+}, [messages]);
 
+  const formatTime = (date) => {
+  return new Date(date).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
   const handleSend = () => {
     if (!text.trim()) return;
     if (!selectedUser) return;
@@ -137,23 +149,38 @@ function Chat() {
         </div>
 
         <div className="chat-messages">
-          {!selectedUser ? (
-            <p>Select a user to start chatting.</p>
-          ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={`message ${
-                  message.senderId === currentUser.id
-                    ? "sent"
-                    : "received"
-                }`}
-              >
-                {message.message}
-              </div>
-            ))
-          )}
-        </div>
+  {!selectedUser ? (
+    <p>Select a user to start chatting.</p>
+  ) : (
+    <>
+      {messages.map((message) => (
+        <div
+  key={message.id}
+  className={`message ${
+    message.senderId === currentUser.id
+      ? "sent"
+      : "received"
+  }`}
+>
+  <div>{message.message}</div>
+
+  <small
+    style={{
+      display: "block",
+      marginTop: "6px",
+      fontSize: "11px",
+      opacity: 0.7,
+    }}
+  >
+    {formatTime(message.createdAt)}
+  </small>
+</div>
+      ))}
+
+      <div ref={messagesEndRef} />
+    </>
+  )}
+</div>
 
         <div className="chat-input">
           <input
