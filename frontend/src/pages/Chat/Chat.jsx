@@ -1,3 +1,6 @@
+import { socket } from "../../lib/socket";
+import { useAuth } from "../../context/AuthContext";
+
 import { useEffect, useState } from "react";
 import "./Chat.css";
 
@@ -6,19 +9,24 @@ import {
   getConversation,
 } from "../../services/chat.service";
 
-import { socket } from "../../lib/socket";
+
+
+
+
+
 
 function Chat() {
-  const currentUser = JSON.parse(
-    localStorage.getItem("offlinenet-user")
-  );
+  const {
+  user: currentUser,
+  onlineUsers,
+} = useAuth();
 
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
 
-  // Load users
+  // Load all users
   useEffect(() => {
     const loadUsers = async () => {
       try {
@@ -32,28 +40,7 @@ function Chat() {
     loadUsers();
   }, []);
 
-  // Receive messages in real time
-  useEffect(() => {
-    const handleReceiveMessage = (message) => {
-      // Only append if it belongs to the current conversation
-      if (
-        selectedUser &&
-        ((message.senderId === selectedUser.id &&
-          message.receiverId === currentUser.id) ||
-          (message.senderId === currentUser.id &&
-            message.receiverId === selectedUser.id))
-      ) {
-        setMessages((prev) => [...prev, message]);
-      }
-    };
-
-    socket.on("receive-message", handleReceiveMessage);
-
-    return () => {
-      socket.off("receive-message", handleReceiveMessage);
-    };
-  }, [selectedUser, currentUser.id]);
-
+  // Load conversation when a user is selected
   const handleSelectUser = async (user) => {
     setSelectedUser(user);
 
@@ -64,6 +51,30 @@ function Chat() {
       console.error(error);
     }
   };
+
+  // Receive messages in real time
+  useEffect(() => {
+    const handleReceiveMessage = (message) => {
+      if (
+        selectedUser &&
+        (
+          (message.senderId === selectedUser.id &&
+            message.receiverId === currentUser.id) ||
+          (message.senderId === currentUser.id &&
+            message.receiverId === selectedUser.id)
+        )
+      ) {
+        setMessages((prev) => [...prev, message]);
+      }
+    };
+
+    socket.on("receive-message", handleReceiveMessage);
+
+    return () => {
+      socket.off("receive-message", handleReceiveMessage);
+    };
+  }, [selectedUser, currentUser]);
+
 
   const handleSend = () => {
     if (!text.trim()) return;
@@ -77,7 +88,7 @@ function Chat() {
     setText("");
   };
 
-  return (
+    return (
     <div className="chat-page">
       <aside className="chat-sidebar">
         <div className="chat-sidebar-header">
@@ -94,6 +105,22 @@ function Chat() {
               onClick={() => handleSelectUser(user)}
             >
               <h4>{user.username}</h4>
+
+              <p
+                style={{
+                  color: onlineUsers.includes(user.id)
+                    ? "green"
+                    : "gray",
+                  fontSize: "13px",
+                  margin: "4px 0",
+                  fontWeight: "600",
+                }}
+              >
+                {onlineUsers.includes(user.id)
+                  ? "🟢 Online"
+                  : "⚪ Offline"}
+              </p>
+
               <p>{user.email}</p>
             </div>
           ))}

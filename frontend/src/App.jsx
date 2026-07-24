@@ -1,9 +1,13 @@
 import { useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
+
 import AppRoutes from "./routes/AppRoutes";
 import { socket } from "./lib/socket";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
+  const { setOnlineUsers } = useAuth();
+
   useEffect(() => {
     const handleConnect = () => {
       console.log("✅ Connected:", socket.id);
@@ -11,10 +15,12 @@ function App() {
 
     const handleDisconnect = () => {
       console.log("❌ Disconnected");
+      setOnlineUsers([]);
     };
 
     const handleOnlineUsers = (users) => {
-      console.log("🟢 Online Users:", users);
+      console.log("🟢 App received online users:", users);
+      setOnlineUsers(users);
     };
 
     const handleReceiveMessage = (message) => {
@@ -32,7 +38,7 @@ function App() {
       socket.off("online-users", handleOnlineUsers);
       socket.off("receive-message", handleReceiveMessage);
     };
-  }, []);
+  }, [setOnlineUsers]);
 
   return (
     <BrowserRouter>
