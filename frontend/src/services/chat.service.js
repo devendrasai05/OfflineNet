@@ -39,3 +39,26 @@ export const getConversation = async (userId) => {
 
   return response.data.messages;
 };
+
+export const editMessage = async (messageId, message) => {
+  const response = await axios.put(
+    `${API_URL}/messages/${messageId}`,
+    { message },
+    {
+      headers: getAuthHeaders(),
+    }
+  );
+
+  return response.data.data;
+};
+
+export const deleteMessage = async (messageId) => {
+  const response = await axios.delete(
+    `${API_URL}/messages/${messageId}`,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
+
+  return response.data.data;
+};

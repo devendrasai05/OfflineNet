@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "public"."Message" ADD COLUMN     "edited" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "public"."User" ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP;

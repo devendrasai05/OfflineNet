@@ -100,3 +100,61 @@ export const markMessagesAsSeen = async (senderId, receiverId) => {
     },
   });
 };
+
+export const editMessage = async ({ messageId, userId, message }) => {
+  const existingMessage = await prisma.message.findUnique({
+    where: {
+      id: messageId,
+    },
+  });
+
+  if (!existingMessage) {
+    throw new Error("Message not found");
+  }
+
+  if (existingMessage.senderId !== userId) {
+    throw new Error("You can only edit your own messages");
+  }
+
+  return await prisma.message.update({
+    where: {
+      id: messageId,
+    },
+    data: {
+      message,
+      edited: true,
+    },
+  });
+};
+
+export const deleteMessage = async ({ messageId, userId }) => {
+  const existingMessage = await prisma.message.findUnique({
+    where: {
+      id: messageId,
+    },
+  });
+
+  if (!existingMessage) {
+    throw new Error("Message not found");
+  }
+
+  if (existingMessage.senderId !== userId) {
+    throw new Error("You can only delete your own messages");
+  }
+
+  if (existingMessage.deleted) {
+    throw new Error("Message has already been deleted");
+  }
+
+  return await prisma.message.update({
+    where: {
+      id: messageId,
+    },
+    data: {
+      deleted: true,
+      deletedAt: new Date(),
+      message: "This message was deleted.",
+      edited: false,
+    },
+  });
+};

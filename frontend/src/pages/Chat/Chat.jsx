@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react";
+import EmojiPicker from "emoji-picker-react";
+
 import { socket } from "../../lib/socket";
 import { useAuth } from "../../context/AuthContext";
 
 import "./Chat.css";
 
 import {
-  getSidebar,
   getConversation,
+  getSidebar,
+  editMessage,
+  deleteMessage,
 } from "../../services/chat.service";
 
 function Chat() {
@@ -17,9 +21,14 @@ function Chat() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState(null);
+  const [editedText, setEditedText] = useState("");
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+  const emojiPickerRef = useRef(null);
+  const emojiButtonRef = useRef(null);
 
   // Load chat sidebar
   useEffect(() => {
@@ -61,7 +70,7 @@ function Chat() {
   } catch (error) {
     console.error(error);
   }
-};
+  };
 
   // Receive messages in real time
 useEffect(() => {
@@ -136,7 +145,7 @@ useEffect(() => {
 });
 };
 
-  const handleTyping = ({ senderId }) => {
+  const handleTypingEvent = ({ senderId }) => {
     if (selectedUser && senderId === selectedUser.id) {
       setIsTyping(true);
     }
@@ -160,16 +169,68 @@ const handleMessagesSeen = ({ seenBy }) => {
   );
 };
 
+const handleMessageEdited = (updatedMessage) => {
+  setMessages((prev) =>
+    prev.map((msg) =>
+      msg.id === updatedMessage.id ? updatedMessage : msg
+    )
+  );
+
+  setUsers((prevUsers) =>
+    prevUsers.map((user) => {
+      if (
+        user.id === updatedMessage.senderId ||
+        user.id === updatedMessage.receiverId
+      ) {
+        return {
+          ...user,
+          lastMessage: updatedMessage.message,
+        };
+      }
+
+      return user;
+    })
+  );
+};
+
+const handleMessageDeleted = (deletedMessage) => {
+  setMessages((prev) =>
+    prev.map((msg) =>
+      msg.id === deletedMessage.id ? deletedMessage : msg
+    )
+  );
+
+  setUsers((prevUsers) =>
+    prevUsers.map((user) => {
+      if (
+        user.id === deletedMessage.senderId ||
+        user.id === deletedMessage.receiverId
+      ) {
+        return {
+          ...user,
+          lastMessage: deletedMessage.message,
+        };
+      }
+
+      return user;
+    })
+  );
+};
+
 socket.on("receive-message", handleReceiveMessage);
-socket.on("typing", handleTyping);
+socket.on("typing", handleTypingEvent);
 socket.on("stop-typing", handleStopTyping);
 socket.on("messages-seen", handleMessagesSeen);
+socket.on("message-edited", handleMessageEdited);
+socket.on("message-deleted", handleMessageDeleted);
 
 return () => {
   socket.off("receive-message", handleReceiveMessage);
-  socket.off("typing", handleTyping);
+  socket.off("typing", handleTypingEvent);
   socket.off("stop-typing", handleStopTyping);
   socket.off("messages-seen", handleMessagesSeen);
+  socket.off("message-edited", handleMessageEdited);
+  socket.off("message-deleted", handleMessageDeleted);
 };
 }, [selectedUser, currentUser]);
 
@@ -190,7 +251,7 @@ return () => {
     });
   };
 
-  const handleTyping = (value) => {
+  const handleInputChange = (value) => {
   setText(value);
 
   if (!selectedUser) return;
@@ -220,6 +281,81 @@ return () => {
     setText("");
   };
 
+  const handleSaveEdit = async () => {
+  if (!editedText.trim()) return;
+
+  try {
+    const updatedMessage = await editMessage(
+      editingMessageId,
+      editedText.trim()
+    );
+
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === updatedMessage.id ? updatedMessage : msg
+      )
+    );
+
+    setEditingMessageId(null);
+    setEditedText("");
+  } catch (error) {
+    console.error("Failed to edit message:", error);
+    alert("Failed to edit message");
+  }
+};
+
+const handleCancelEdit = () => {
+  setEditingMessageId(null);
+  setEditedText("");
+};
+
+  const handleDeleteMessage = async (messageId) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this message?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const deletedMessage = await deleteMessage(messageId);
+
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.id === deletedMessage.id ? deletedMessage : msg
+      )
+    );
+
+    setUsers((prevUsers) =>
+      prevUsers.map((user) => {
+        if (
+          user.id === deletedMessage.senderId ||
+          user.id === deletedMessage.receiverId
+        ) {
+          return {
+            ...user,
+            lastMessage: deletedMessage.message,
+          };
+        }
+
+        return user;
+      })
+    );
+  } catch (error) {
+    console.error(error);
+    alert("Failed to delete message.");
+  }
+};
+
+
+  const toggleEmojiPicker = () => {
+  setShowEmojiPicker((prev) => !prev);
+  };
+
+  const handleEmojiClick = (emojiData) => {
+  setText((prev) => prev + emojiData.emoji);
+  setShowEmojiPicker(false);
+  };
+
   return (
     <div className="chat-page">
       <aside className="chat-sidebar">
@@ -242,30 +378,28 @@ return () => {
 
               <div className="chat-user-details">
                 <div className="chat-user-top">
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <h4>{user.username}</h4>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <h4>{user.username}</h4>
 
-                        <span
-                          className={
-                            onlineUsers.includes(user.id)
-                              ? "status-dot online"
-                              : "status-dot offline"
-                          }
-                        />
-                      </div>
+                    <span
+                      className={
+                        onlineUsers.includes(user.id)
+                          ? "status-dot online"
+                          : "status-dot offline"
+                      }
+                    />
+                  </div>
 
-                      {user.unreadCount > 0 && (
-                        <span className="unread-badge">
-                          {user.unreadCount}
-                        </span>
-                      )}
-                    </div>
+                  {user.unreadCount > 0 && (
+                    <span className="unread-badge">{user.unreadCount}</span>
+                  )}
+                </div>
 
                 <p className="chat-user-subtitle">
                   {user.lastMessage ? (
@@ -287,20 +421,14 @@ return () => {
 
       <section className="chat-window">
         <div className="chat-header">
-  <div>
-    <h3>
-      {selectedUser
-        ? selectedUser.username
-        : "Select a user"}
-    </h3>
+          <div>
+            <h3>{selectedUser ? selectedUser.username : "Select a user"}</h3>
 
-    {selectedUser && isTyping && (
-      <p className="typing-indicator">
-        Typing...
-      </p>
-    )}
-  </div>
-</div>
+            {selectedUser && isTyping && (
+              <p className="typing-indicator">Typing...</p>
+            )}
+          </div>
+        </div>
 
         <div className="chat-messages">
           {!selectedUser ? (
@@ -311,30 +439,110 @@ return () => {
                 <div
                   key={message.id}
                   className={`message ${
-                    message.senderId === currentUser?.id
-                      ? "sent"
-                      : "received"
+                    message.senderId === currentUser?.id ? "sent" : "received"
                   }`}
                 >
-                  <div>{message.message}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "10px",
+                    }}
+                  >
+                    {editingMessageId === message.id ? (
+                      <input
+                        type="text"
+                        value={editedText}
+                        onChange={(e) => setEditedText(e.target.value)}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleSaveEdit();
+                          }
+
+                          if (e.key === "Escape") {
+                            handleCancelEdit();
+                          }
+                        }}
+                        style={{
+                          flex: 1,
+                          padding: "6px",
+                        }}
+                      />
+                    ) : (
+                      <span>
+                        {message.message}
+                        {message.edited && (
+                          <span
+                            style={{
+                              marginLeft: "6px",
+                              fontSize: "11px",
+                              opacity: 0.7,
+                              fontStyle: "italic",
+                            }}
+                          >
+                            (edited)
+                          </span>
+                        )}
+                      </span>
+                    )}
+
+                    {message.senderId === currentUser?.id &&
+                      editingMessageId !== message.id &&
+                      !message.deleted && (
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "6px",
+                          }}
+                        >
+                          <button
+                            onClick={() => {
+                              setEditingMessageId(message.id);
+                              setEditedText(message.message);
+                            }}
+                            style={{
+                              fontSize: "11px",
+                              padding: "2px 6px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteMessage(message.id)}
+                            style={{
+                              fontSize: "11px",
+                              padding: "2px 6px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                  </div>
 
                   <small
-  style={{
-    display: "block",
-    marginTop: "6px",
-    fontSize: "11px",
-    opacity: 0.7,
-  }}
->
-  {formatTime(message.createdAt)}
+                    style={{
+                      display: "block",
+                      marginTop: "6px",
+                      fontSize: "11px",
+                      opacity: 0.7,
+                    }}
+                  >
+                    {formatTime(message.createdAt)}
 
-  {message.senderId === currentUser?.id && (
-    <>
-      {" • "}
-      {message.seen ? "Seen" : "Sent"}
-    </>
-  )}
-</small>
+                    {message.senderId === currentUser?.id && (
+                      <>
+                        {" • "}
+                        {message.seen ? "Seen" : "Sent"}
+                      </>
+                    )}
+                  </small>
                 </div>
               ))}
 
@@ -344,22 +552,73 @@ return () => {
         </div>
 
         <div className="chat-input">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            value={text}
-            onChange={(e) => handleTyping(e.target.value)}
-            disabled={!selectedUser}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSend();
-              }
+          <div
+            style={{
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+              flex: 1,
             }}
-          />
+          >
+            <button
+              ref={emojiButtonRef}
+              type="button"
+              onClick={toggleEmojiPicker}
+              disabled={!selectedUser}
+              style={{
+                marginRight: "8px",
+                fontSize: "20px",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              😊
+            </button>
+
+            {showEmojiPicker && (
+              <div
+                ref={emojiPickerRef}
+                style={{
+                  position: "absolute",
+                  bottom: "55px",
+                  left: "0",
+                  zIndex: 1000,
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
+                }}
+              >
+                <EmojiPicker
+                  onEmojiClick={handleEmojiClick}
+                  width={320}
+                  height={400}
+                />
+              </div>
+            )}
+
+            <input
+              type="text"
+              placeholder={
+                editingMessageId !== null
+                  ? "Editing message... Press Enter to save, Esc to cancel"
+                  : "Type a message..."
+              }
+              value={text}
+              onChange={(e) => handleInputChange(e.target.value)}
+              disabled={!selectedUser || editingMessageId !== null}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSend();
+                }
+              }}
+              style={{
+                flex: 1,
+              }}
+            />
+          </div>
 
           <button
             onClick={handleSend}
-            disabled={!selectedUser}
+            disabled={!selectedUser || editingMessageId !== null}
           >
             Send
           </button>

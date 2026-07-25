@@ -13,8 +13,10 @@ import {
   markMessagesAsSeen,
 } from "../services/message.service.js";
 
+let io;
+
 export const initializeSocket = (server) => {
-  const io = new Server(server, {
+   io = new Server(server, {
     cors: {
       origin: "*",
       methods: ["GET", "POST"],
@@ -132,6 +134,14 @@ socket.on("mark-seen", async ({ senderId }) => {
       io.emit("online-users", getOnlineUsers());
     });
   });
+
+  return io;
+};
+
+export const getIO = () => {
+  if (!io) {
+    throw new Error("Socket.IO has not been initialized");
+  }
 
   return io;
 };
