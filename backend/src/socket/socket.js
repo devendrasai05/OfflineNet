@@ -55,34 +55,38 @@ export const initializeSocket = (server) => {
     });
 
     // Handle sending messages
-    socket.on("send-message", async ({ receiverId, message }) => {
-      try {
-        // Save message to database
-        const savedMessage = await createMessage({
-          senderId: socket.user.id,
-          receiverId,
-          message,
-        });
+    socket.on(
+  "send-message",
+  async ({ receiverId, message, replyToId = null }) => {
+    try {
+      // Save message to database
+      const savedMessage = await createMessage({
+        senderId: socket.user.id,
+        receiverId,
+        message,
+        replyToId,
+      });
 
-        console.log("💾 Message saved:", savedMessage);
+      console.log("💾 Message saved:", savedMessage);
 
-        // Check if receiver is online
-        const receiverSocketId = getUserSocket(receiverId);
+      // Check if receiver is online
+      const receiverSocketId = getUserSocket(receiverId);
 
-        // Send message to receiver
-        if (receiverSocketId) {
-          io.to(receiverSocketId).emit(
-            "receive-message",
-            savedMessage
-          );
-        }
-
-        // Send the message back to the sender too
-        socket.emit("receive-message", savedMessage);
-      } catch (error) {
-        console.error("❌ Error saving message:", error);
+      // Send message to receiver
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit(
+          "receive-message",
+          savedMessage
+        );
       }
-    });
+
+      // Send the message back to the sender too
+      socket.emit("receive-message", savedMessage);
+    } catch (error) {
+      console.error("❌ Error saving message:", error);
+    }
+  }
+);
 
         // Handle typing indicator
     socket.on("typing", ({ receiverId }) => {

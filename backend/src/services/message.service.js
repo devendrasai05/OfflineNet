@@ -1,11 +1,20 @@
 import prisma from "../lib/prisma.js";
 
-export const createMessage = async ({ senderId, receiverId, message }) => {
+export const createMessage = async ({
+  senderId,
+  receiverId,
+  message,
+  replyToId = null,
+}) => {
   return await prisma.message.create({
     data: {
       senderId,
       receiverId,
       message,
+      replyToId,
+    },
+    include: {
+      replyTo: true,
     },
   });
 };
@@ -23,6 +32,16 @@ export const getConversation = async (user1Id, user2Id) => {
           receiverId: user1Id,
         },
       ],
+    },
+    include: {
+      replyTo: {
+        select: {
+          id: true,
+          message: true,
+          senderId: true,
+          deleted: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "asc",

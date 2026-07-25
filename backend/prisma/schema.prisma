@@ -28,6 +28,11 @@ model Message {
 
   message String
 
+  // Reply support
+  replyToId Int?
+  replyTo   Message?  @relation("MessageReplies", fields: [replyToId], references: [id])
+  replies   Message[] @relation("MessageReplies")
+
   seen Boolean @default(false)
 
   edited Boolean @default(false)

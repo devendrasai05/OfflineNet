@@ -24,11 +24,13 @@ function Chat() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState(null);
   const [editedText, setEditedText] = useState("");
+  const [replyingTo, setReplyingTo] = useState(null);
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const emojiButtonRef = useRef(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
 
   // Load chat sidebar
   useEffect(() => {
@@ -46,196 +48,184 @@ function Chat() {
 
   // Load conversation
   const handleSelectUser = async (user) => {
-  setSelectedUser(user);
+    setSelectedUser(user);
 
-  // Clear unread badge immediately
-  setUsers((prevUsers) =>
-    prevUsers.map((u) =>
-      u.id === user.id
-        ? {
-            ...u,
-            unreadCount: 0,
-          }
-        : u
-    )
-  );
+    // Clear unread badge immediately
+    setUsers((prevUsers) =>
+      prevUsers.map((u) =>
+        u.id === user.id
+          ? {
+              ...u,
+              unreadCount: 0,
+            }
+          : u,
+      ),
+    );
 
-  try {
-    const conversation = await getConversation(user.id);
-    setMessages(conversation);
+    try {
+      const conversation = await getConversation(user.id);
+      setMessages(conversation);
 
-    socket.emit("mark-seen", {
-      senderId: user.id,
-    });
-  } catch (error) {
-    console.error(error);
-  }
+      socket.emit("mark-seen", {
+        senderId: user.id,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Receive messages in real time
-useEffect(() => {
-  const handleReceiveMessage = (message) => {
-  const isCurrentConversation =
-    selectedUser &&
-    (
-      (message.senderId === selectedUser.id &&
-        message.receiverId === currentUser?.id) ||
-      (message.senderId === currentUser?.id &&
-        message.receiverId === selectedUser.id)
-    );
+  useEffect(() => {
+    const handleReceiveMessage = (message) => {
+      const isCurrentConversation =
+        selectedUser &&
+        ((message.senderId === selectedUser.id &&
+          message.receiverId === currentUser?.id) ||
+          (message.senderId === currentUser?.id &&
+            message.receiverId === selectedUser.id));
 
-  if (isCurrentConversation) {
-    setMessages((prev) => [...prev, message]);
-    setIsTyping(false);
+      if (isCurrentConversation) {
+        setMessages((prev) => [...prev, message]);
+        setIsTyping(false);
 
-    // If the current user received a message while this chat is open,
-    // immediately mark it as seen.
-    if (
-      message.senderId === selectedUser.id &&
-      message.receiverId === currentUser?.id
-    ) {
-      socket.emit("mark-seen", {
-        senderId: message.senderId,
+        // If the current user received a message while this chat is open,
+        // immediately mark it as seen.
+        if (
+          message.senderId === selectedUser.id &&
+          message.receiverId === currentUser?.id
+        ) {
+          socket.emit("mark-seen", {
+            senderId: message.senderId,
+          });
+        }
+      }
+
+      // Update sidebar preview and move conversation to the top
+      setUsers((prevUsers) => {
+        const updatedUsers = prevUsers.map((user) => {
+          if (user.id === message.senderId || user.id === message.receiverId) {
+            const isIncoming =
+              message.senderId === user.id &&
+              message.receiverId === currentUser?.id;
+
+            const chatOpen = selectedUser?.id === user.id;
+
+            return {
+              ...user,
+              lastMessage: message.message,
+              lastMessageSenderId: message.senderId,
+              lastMessageTime: message.createdAt,
+
+              unreadCount: isIncoming
+                ? chatOpen
+                  ? 0
+                  : (user.unreadCount || 0) + 1
+                : user.unreadCount,
+            };
+          }
+
+          return user;
+        });
+
+        updatedUsers.sort((a, b) => {
+          if (!a.lastMessageTime) return 1;
+          if (!b.lastMessageTime) return -1;
+
+          return new Date(b.lastMessageTime) - new Date(a.lastMessageTime);
+        });
+
+        return updatedUsers;
       });
-    }
-  }
+    };
 
-  // Update sidebar preview and move conversation to the top
-  setUsers((prevUsers) => {
-  const updatedUsers = prevUsers.map((user) => {
-    if (
-      user.id === message.senderId ||
-      user.id === message.receiverId
-    ) {
-      const isIncoming =
-        message.senderId === user.id &&
-        message.receiverId === currentUser?.id;
-
-      const chatOpen =
-        selectedUser?.id === user.id;
-
-      return {
-        ...user,
-        lastMessage: message.message,
-        lastMessageSenderId: message.senderId,
-        lastMessageTime: message.createdAt,
-
-        unreadCount: isIncoming
-          ? chatOpen
-            ? 0
-            : (user.unreadCount || 0) + 1
-          : user.unreadCount,
-      };
-    }
-
-    return user;
-  });
-
-  updatedUsers.sort((a, b) => {
-    if (!a.lastMessageTime) return 1;
-    if (!b.lastMessageTime) return -1;
-
-    return (
-      new Date(b.lastMessageTime) -
-      new Date(a.lastMessageTime)
-    );
-  });
-
-  return updatedUsers;
-});
-};
-
-  const handleTypingEvent = ({ senderId }) => {
-    if (selectedUser && senderId === selectedUser.id) {
-      setIsTyping(true);
-    }
-  };
-
-  const handleStopTyping = ({ senderId }) => {
-  if (selectedUser && senderId === selectedUser.id) {
-    setIsTyping(false);
-  }
-};
-
-const handleMessagesSeen = ({ seenBy }) => {
-  if (!selectedUser || selectedUser.id !== seenBy) return;
-
-  setMessages((prev) =>
-    prev.map((message) =>
-      message.senderId === currentUser?.id
-        ? { ...message, seen: true }
-        : message
-    )
-  );
-};
-
-const handleMessageEdited = (updatedMessage) => {
-  setMessages((prev) =>
-    prev.map((msg) =>
-      msg.id === updatedMessage.id ? updatedMessage : msg
-    )
-  );
-
-  setUsers((prevUsers) =>
-    prevUsers.map((user) => {
-      if (
-        user.id === updatedMessage.senderId ||
-        user.id === updatedMessage.receiverId
-      ) {
-        return {
-          ...user,
-          lastMessage: updatedMessage.message,
-        };
+    const handleTypingEvent = ({ senderId }) => {
+      if (selectedUser && senderId === selectedUser.id) {
+        setIsTyping(true);
       }
+    };
 
-      return user;
-    })
-  );
-};
-
-const handleMessageDeleted = (deletedMessage) => {
-  setMessages((prev) =>
-    prev.map((msg) =>
-      msg.id === deletedMessage.id ? deletedMessage : msg
-    )
-  );
-
-  setUsers((prevUsers) =>
-    prevUsers.map((user) => {
-      if (
-        user.id === deletedMessage.senderId ||
-        user.id === deletedMessage.receiverId
-      ) {
-        return {
-          ...user,
-          lastMessage: deletedMessage.message,
-        };
+    const handleStopTyping = ({ senderId }) => {
+      if (selectedUser && senderId === selectedUser.id) {
+        setIsTyping(false);
       }
+    };
 
-      return user;
-    })
-  );
-};
+    const handleMessagesSeen = ({ seenBy }) => {
+      if (!selectedUser || selectedUser.id !== seenBy) return;
 
-socket.on("receive-message", handleReceiveMessage);
-socket.on("typing", handleTypingEvent);
-socket.on("stop-typing", handleStopTyping);
-socket.on("messages-seen", handleMessagesSeen);
-socket.on("message-edited", handleMessageEdited);
-socket.on("message-deleted", handleMessageDeleted);
+      setMessages((prev) =>
+        prev.map((message) =>
+          message.senderId === currentUser?.id
+            ? { ...message, seen: true }
+            : message,
+        ),
+      );
+    };
 
-return () => {
-  socket.off("receive-message", handleReceiveMessage);
-  socket.off("typing", handleTypingEvent);
-  socket.off("stop-typing", handleStopTyping);
-  socket.off("messages-seen", handleMessagesSeen);
-  socket.off("message-edited", handleMessageEdited);
-  socket.off("message-deleted", handleMessageDeleted);
-};
-}, [selectedUser, currentUser]);
+    const handleMessageEdited = (updatedMessage) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === updatedMessage.id ? updatedMessage : msg,
+        ),
+      );
 
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => {
+          if (
+            user.id === updatedMessage.senderId ||
+            user.id === updatedMessage.receiverId
+          ) {
+            return {
+              ...user,
+              lastMessage: updatedMessage.message,
+            };
+          }
 
+          return user;
+        }),
+      );
+    };
 
+    const handleMessageDeleted = (deletedMessage) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === deletedMessage.id ? deletedMessage : msg,
+        ),
+      );
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => {
+          if (
+            user.id === deletedMessage.senderId ||
+            user.id === deletedMessage.receiverId
+          ) {
+            return {
+              ...user,
+              lastMessage: deletedMessage.message,
+            };
+          }
+
+          return user;
+        }),
+      );
+    };
+
+    socket.on("receive-message", handleReceiveMessage);
+    socket.on("typing", handleTypingEvent);
+    socket.on("stop-typing", handleStopTyping);
+    socket.on("messages-seen", handleMessagesSeen);
+    socket.on("message-edited", handleMessageEdited);
+    socket.on("message-deleted", handleMessageDeleted);
+
+    return () => {
+      socket.off("receive-message", handleReceiveMessage);
+      socket.off("typing", handleTypingEvent);
+      socket.off("stop-typing", handleStopTyping);
+      socket.off("messages-seen", handleMessagesSeen);
+      socket.off("message-edited", handleMessageEdited);
+      socket.off("message-deleted", handleMessageDeleted);
+    };
+  }, [selectedUser, currentUser]);
 
   // Auto-scroll
   useEffect(() => {
@@ -252,22 +242,22 @@ return () => {
   };
 
   const handleInputChange = (value) => {
-  setText(value);
+    setText(value);
 
-  if (!selectedUser) return;
+    if (!selectedUser) return;
 
-  socket.emit("typing", {
-    receiverId: selectedUser.id,
-  });
-
-  clearTimeout(typingTimeoutRef.current);
-
-  typingTimeoutRef.current = setTimeout(() => {
-    socket.emit("stop-typing", {
+    socket.emit("typing", {
       receiverId: selectedUser.id,
     });
-  }, 1000);
-};
+
+    clearTimeout(typingTimeoutRef.current);
+
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stop-typing", {
+        receiverId: selectedUser.id,
+      });
+    }, 1000);
+  };
 
   const handleSend = () => {
     if (!text.trim()) return;
@@ -276,84 +266,85 @@ return () => {
     socket.emit("send-message", {
       receiverId: selectedUser.id,
       message: text,
+      replyToId: replyingTo?.id ?? null,
     });
 
     setText("");
+    setReplyingTo(null);
   };
 
   const handleSaveEdit = async () => {
-  if (!editedText.trim()) return;
+    if (!editedText.trim()) return;
 
-  try {
-    const updatedMessage = await editMessage(
-      editingMessageId,
-      editedText.trim()
-    );
+    try {
+      const updatedMessage = await editMessage(
+        editingMessageId,
+        editedText.trim(),
+      );
 
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === updatedMessage.id ? updatedMessage : msg
-      )
-    );
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === updatedMessage.id ? updatedMessage : msg,
+        ),
+      );
 
+      setEditingMessageId(null);
+      setEditedText("");
+    } catch (error) {
+      console.error("Failed to edit message:", error);
+      alert("Failed to edit message");
+    }
+  };
+
+  const handleCancelEdit = () => {
     setEditingMessageId(null);
     setEditedText("");
-  } catch (error) {
-    console.error("Failed to edit message:", error);
-    alert("Failed to edit message");
-  }
-};
-
-const handleCancelEdit = () => {
-  setEditingMessageId(null);
-  setEditedText("");
-};
+  };
 
   const handleDeleteMessage = async (messageId) => {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this message?"
-  );
-
-  if (!confirmed) return;
-
-  try {
-    const deletedMessage = await deleteMessage(messageId);
-
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === deletedMessage.id ? deletedMessage : msg
-      )
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this message?",
     );
 
-    setUsers((prevUsers) =>
-      prevUsers.map((user) => {
-        if (
-          user.id === deletedMessage.senderId ||
-          user.id === deletedMessage.receiverId
-        ) {
-          return {
-            ...user,
-            lastMessage: deletedMessage.message,
-          };
-        }
+    if (!confirmed) return;
 
-        return user;
-      })
-    );
-  } catch (error) {
-    console.error(error);
-    alert("Failed to delete message.");
-  }
-};
+    try {
+      const deletedMessage = await deleteMessage(messageId);
 
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === deletedMessage.id ? deletedMessage : msg,
+        ),
+      );
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => {
+          if (
+            user.id === deletedMessage.senderId ||
+            user.id === deletedMessage.receiverId
+          ) {
+            return {
+              ...user,
+              lastMessage: deletedMessage.message,
+            };
+          }
+
+          return user;
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete message.");
+    }
+  };
 
   const toggleEmojiPicker = () => {
-  setShowEmojiPicker((prev) => !prev);
+    setShowEmojiPicker((prev) => !prev);
   };
 
   const handleEmojiClick = (emojiData) => {
-  setText((prev) => prev + emojiData.emoji);
-  setShowEmojiPicker(false);
+    setText((prev) => prev + emojiData.emoji);
+    setShowEmojiPicker(false);
   };
 
   return (
@@ -473,57 +464,91 @@ const handleCancelEdit = () => {
                       />
                     ) : (
                       <span>
-                        {message.message}
-                        {message.edited && (
-                          <span
-                            style={{
-                              marginLeft: "6px",
-                              fontSize: "11px",
-                              opacity: 0.7,
-                              fontStyle: "italic",
-                            }}
-                          >
-                            (edited)
-                          </span>
+                        {message.replyTo && (
+                          <div className="reply-message">
+                            <strong>
+                              ↩{" "}
+                              {message.replyTo.senderId === currentUser?.id
+                                ? "You"
+                                : selectedUser?.username}
+                            </strong>
+
+                            <p>
+                              {message.replyTo.deleted
+                                ? "This message was deleted."
+                                : message.replyTo.message}
+                            </p>
+                          </div>
                         )}
+
+                        <div>
+                          {message.message}
+
+                          {message.edited && (
+                            <span
+                              style={{
+                                marginLeft: "6px",
+                                fontSize: "11px",
+                                opacity: 0.7,
+                                fontStyle: "italic",
+                              }}
+                            >
+                              (edited)
+                            </span>
+                          )}
+                        </div>
                       </span>
                     )}
 
-                    {message.senderId === currentUser?.id &&
-                      editingMessageId !== message.id &&
-                      !message.deleted && (
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "6px",
-                          }}
-                        >
+                    <div className="message-actions">
+                      <button
+                        className="message-menu-button"
+                        onClick={() =>
+                          setOpenMenuId(
+                            openMenuId === message.id ? null : message.id,
+                          )
+                        }
+                      >
+                        ⋮
+                      </button>
+
+                      {openMenuId === message.id && (
+                        <div className="message-dropdown">
                           <button
                             onClick={() => {
-                              setEditingMessageId(message.id);
-                              setEditedText(message.message);
-                            }}
-                            style={{
-                              fontSize: "11px",
-                              padding: "2px 6px",
-                              cursor: "pointer",
+                              setReplyingTo(message);
+                              setOpenMenuId(null);
                             }}
                           >
-                            Edit
+                            Reply
                           </button>
 
-                          <button
-                            onClick={() => handleDeleteMessage(message.id)}
-                            style={{
-                              fontSize: "11px",
-                              padding: "2px 6px",
-                              cursor: "pointer",
-                            }}
-                          >
-                            Delete
-                          </button>
+                          {message.senderId === currentUser?.id &&
+                            !message.deleted && (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    setEditingMessageId(message.id);
+                                    setEditedText(message.message);
+                                    setOpenMenuId(null);
+                                  }}
+                                >
+                                  Edit
+                                </button>
+
+                                <button
+                                  onClick={() => {
+                                    handleDeleteMessage(message.id);
+                                    setOpenMenuId(null);
+                                  }}
+                                >
+                                  Delete
+                                </button>
+                              </>
+                            )}
                         </div>
                       )}
+                    </div>
                   </div>
 
                   <small
@@ -552,6 +577,22 @@ const handleCancelEdit = () => {
         </div>
 
         <div className="chat-input">
+          {replyingTo && (
+            <div className="reply-preview">
+              <div className="reply-preview-content">
+                <strong>Replying to</strong>
+                <p>{replyingTo.message}</p>
+              </div>
+
+              <button
+                className="reply-cancel"
+                onClick={() => setReplyingTo(null)}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
           <div
             style={{
               position: "relative",
