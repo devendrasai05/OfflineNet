@@ -5,6 +5,11 @@ export const createMessage = async ({
   receiverId,
   message,
   replyToId = null,
+  messageType = "TEXT",
+  fileName = null,
+  filePath = null,
+  fileSize = null,
+  mimeType = null,
 }) => {
   return await prisma.message.create({
     data: {
@@ -12,6 +17,11 @@ export const createMessage = async ({
       receiverId,
       message,
       replyToId,
+      messageType,
+      fileName,
+      filePath,
+      fileSize,
+      mimeType,
     },
     include: {
       replyTo: true,
@@ -101,7 +111,7 @@ export const getSidebarConversations = async (currentUserId) => {
         lastMessageTime: lastMessage?.createdAt ?? null,
         unreadCount,
       };
-    })
+    }),
   );
 
   return sidebarUsers;

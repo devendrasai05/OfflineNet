@@ -13,8 +13,9 @@ function FormField({
 }) {
   return (
     <div className="form-field">
-      <label htmlFor={id}>{label}</label>
-
+      <label className="form-field-label" htmlFor={id}>
+  {label}
+</label>
       <Input
         id={id}
         type={type}

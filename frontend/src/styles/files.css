@@ -1,0 +1,464 @@
+/* ---------- File Explorer Sidebar ---------- */
+
+.file-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px 16px;
+  background: #202225;
+  border-right: 1px solid #2f3136;
+}
+
+.file-sidebar-title {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.file-sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.file-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #b9bbbe;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.file-sidebar-item:hover {
+  background: #2f3136;
+  color: white;
+}
+
+.file-sidebar-item.active {
+  background: #5865f2;
+  color: white;
+}
+
+.file-sidebar-item.active:hover {
+  background: #4752c4;
+}
+
+/* ---------- Main Page ---------- */
+
+.files-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  width: 100%;
+  height: 100%;
+  background: #313338;
+  overflow-y: auto;
+}
+
+.files-header h1 {
+  color: white;
+  font-size: 30px;
+  margin: 0;
+}
+
+.files-header p {
+  color: #b5bac1;
+  margin-top: 8px;
+}
+
+/* ---------- Toolbar ---------- */
+
+.file-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.file-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1e1f22;
+  border: 1px solid #40444b;
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.file-search svg {
+  color: #949ba4;
+}
+
+.file-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 15px;
+}
+
+.upload-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  background: #5865f2;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.upload-button:hover {
+  background: #4752c4;
+}
+
+/* ---------- Documents Grid ---------- */
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(300px, 1fr)
+  );
+  gap: 20px;
+}
+
+.empty-documents {
+  color: white;
+  text-align: center;
+  padding: 60px;
+}
+
+/* ===========================
+   Document Cards
+=========================== */
+
+.document-card {
+  background: #2b2d31;
+  border: 1px solid #3b3d44;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.document-card:hover {
+  transform: translateY(-4px);
+  border-color: #5865f2;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.document-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.document-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: #202225;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.document-title {
+  flex: 1;
+}
+
+.document-title h3 {
+  margin: 0;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.document-title p {
+  margin-top: 8px;
+  color: #b5bac1;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* ===========================
+   File Type Icons
+=========================== */
+
+.pdf-icon {
+  color: #ff5d5d;
+}
+
+.word-icon {
+  color: #4f8cff;
+}
+
+.image-icon {
+  color: #59d98e;
+}
+
+.audio-icon {
+  color: #f6c453;
+}
+
+.video-icon {
+  color: #b86cff;
+}
+
+.default-icon {
+  color: #d7d7d7;
+}
+
+/* ===========================
+   Tags
+=========================== */
+
+.document-tags {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.category-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(88, 101, 242, 0.15);
+  color: #8ea1ff;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.uploader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c5c8ce;
+  font-size: 14px;
+}
+
+/* ===========================
+   Footer
+=========================== */
+
+.document-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #3b3d44;
+  padding-top: 16px;
+}
+
+.file-size {
+  color: #9fa6b2;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.download-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #5865f2;
+  color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.download-button:hover {
+  background: #4752c4;
+}
+
+/* ===========================
+   Preview Modal
+=========================== */
+
+.preview-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+}
+
+.preview-modal {
+  width: 1100px;
+  max-width: 95vw;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background: #2b2d31;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #3d4148;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- Header ---------- */
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  background: #202225;
+  border-bottom: 1px solid #3b3d44;
+}
+
+.preview-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 24px;
+}
+
+.preview-close {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.preview-close:hover {
+  background: #40444b;
+}
+
+/* ---------- Body ---------- */
+
+.preview-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  overflow: hidden;
+}
+
+/* ---------- Viewer ---------- */
+
+.preview-viewer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: #313338;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 12px;
+}
+
+.preview-pdf,
+.preview-text {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+  background: white;
+}
+
+/* ---------- Sidebar ---------- */
+
+.preview-sidebar {
+  background: #242529;
+  border-left: 1px solid #3b3d44;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.preview-sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: white;
+  font-size: 20px;
+}
+
+.preview-info-card {
+  background: #313338;
+  border: 1px solid #40444b;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.preview-info-card span {
+  display: block;
+  color: #8ea1ff;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.preview-info-card strong {
+  color: white;
+  font-size: 15px;
+}
+
+/* ---------- No Preview ---------- */
+
+.preview-unavailable {
+  text-align: center;
+  color: white;
+}
+
+.preview-unavailable p {
+  color: #b5bac1;
+}
+
+/* ---------- Footer ---------- */
+
+.preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #202225;
+  border-top: 1px solid #3b3d44;
+}
+
+.cancel-button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  background: #40444b;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cancel-button:hover {
+  background: #555962;
+}

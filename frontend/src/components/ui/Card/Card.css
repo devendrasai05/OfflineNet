@@ -5,14 +5,19 @@
   border-radius: var(--radius-lg);
 
   padding: var(--space-8);
-
   box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
+  overflow: hidden;
+  color: var(--color-text);
 
   transition:
     box-shadow var(--transition-fast),
-    transform var(--transition-fast);
+    transform var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .card:hover {
   box-shadow: var(--shadow-md);
+  border-color: rgba(59, 130, 246, 0.25);
+  transform: translateY(-2px);
 }

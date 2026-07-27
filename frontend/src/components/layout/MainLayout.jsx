@@ -1,19 +1,14 @@
 import { Outlet } from "react-router-dom";
-import Header from "../navigation/Header";
-import Sidebar from "../navigation/Sidebar";
+import IconSidebar from "../navigation/IconSidebar";
 
 function MainLayout() {
   return (
-    <div className="app-layout">
-      <Header />
+    <div className="desktop-layout">
+      <IconSidebar />
 
-      <div className="app-body">
-        <Sidebar />
-
-        <main className="app-content">
-          <Outlet />
-        </main>
-      </div>
+      <main className="desktop-content">
+        <Outlet />
+      </main>
     </div>
   );
 }

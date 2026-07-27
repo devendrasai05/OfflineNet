@@ -1,0 +1,109 @@
+.settings-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 24px 16px;
+  background: #202225;
+  border-right: 1px solid #2f3136;
+}
+
+.settings-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 24px;
+}
+
+.settings-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #b9bbbe;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 15px;
+}
+
+.settings-menu-item:hover {
+  background: #2f3136;
+  color: white;
+}
+
+.settings-menu-item.active {
+  background: #5865f2;
+  color: white;
+}
+
+.settings-content {
+  padding: 40px;
+  width: 100%;
+  color: white;
+}
+
+.settings-content h1 {
+  margin-bottom: 24px;
+  font-size: 30px;
+}
+
+.settings-card {
+  background: #202225;
+  border: 1px solid #2f3136;
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 600px;
+}
+
+.settings-card label {
+  color: #dcddde;
+  font-weight: 600;
+}
+
+.settings-card input,
+.settings-card select {
+  background: #2f3136;
+  color: white;
+  border: 1px solid #40444b;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.settings-card input:focus,
+.settings-card select:focus {
+  outline: none;
+  border-color: #5865f2;
+}
+
+.settings-card button {
+  align-self: flex-start;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #5865f2;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.settings-card button:hover {
+  background: #4752c4;
+}
+
+.settings-card p {
+  margin: 0;
+  color: #dcddde;
+}
