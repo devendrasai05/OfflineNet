@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 
 import AppRoutes from "./routes/AppRoutes";
 import { socket } from "./lib/socket";
@@ -9,7 +9,8 @@ function App() {
   const { setOnlineUsers } = useAuth();
 
   useEffect(() => {
-    window.offlineNet
+    window.offlineNet;
+
     // Reconnect socket if user is already logged in
     const token = localStorage.getItem("offlinenet-token");
 
@@ -50,9 +51,9 @@ function App() {
   }, [setOnlineUsers]);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <AppRoutes />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

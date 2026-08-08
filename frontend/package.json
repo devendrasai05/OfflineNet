@@ -32,6 +32,17 @@
       "discovery.js",
       "backend.js"
     ],
+    "extraResources": [
+      {
+        "from": "../backend",
+        "to": "backend",
+        "filter": [
+          "**/*",
+          "!node_modules/.cache/**/*",
+          "!node_modules/.prisma/client/*.tmp*"
+        ]
+      }
+    ],
     "win": {
       "target": "portable"
     }
