@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import http from "http";
 import { initializeSocket } from "./socket/socket.js";
 import app from "./app.js";
-import commentRoutes from "./routes/comment.routes.js";
+
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ const server = http.createServer(app);
 initializeSocket(server);
 
 // Start server
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(
     `🚀 Server running in ${process.env.NODE_ENV} mode on http://localhost:${PORT}`
   );

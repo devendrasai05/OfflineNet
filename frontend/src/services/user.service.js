@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/users";
+import { API_URL } from "../config";
+
+const USERS_API_URL = `${API_URL}/users`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("offlinenet-token");
@@ -11,7 +13,7 @@ const getAuthHeaders = () => {
 };
 
 export const getUsers = async () => {
-  const response = await axios.get(API_URL, {
+  const response = await axios.get(USERS_API_URL, {
     headers: getAuthHeaders(),
   });
 

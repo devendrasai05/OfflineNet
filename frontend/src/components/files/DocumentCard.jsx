@@ -10,6 +10,8 @@ import {
   FaTag,
 } from "react-icons/fa";
 
+import { SERVER_URL } from "../../config";
+
 function getFileIcon(fileName = "") {
   const ext = fileName.split(".").pop()?.toLowerCase();
 
@@ -56,7 +58,7 @@ function formatSize(bytes = 0) {
 }
 
 function DocumentCard({ document, onClick }) {
-  const fileUrl = `http://localhost:5000/uploads/${document.filePath
+  const fileUrl = `${SERVER_URL}/uploads/${document.filePath
     .split("\\")
     .pop()}`;
 

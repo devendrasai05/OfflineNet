@@ -1,15 +1,14 @@
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://localhost:5000";
+import { SERVER_URL } from "../config";
 
-export const socket = io(SOCKET_URL, {
+export const socket = io(SERVER_URL, {
   autoConnect: false,
   transports: ["websocket"],
 });
 
 export const connectSocket = (token) => {
   console.log("connectSocket() called");
-
   socket.auth = { token };
   socket.connect();
 };

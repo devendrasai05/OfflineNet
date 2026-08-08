@@ -1,9 +1,11 @@
+import { SERVER_URL } from "../../../config";
+
 function FileMessage({
   message,
   getFileIcon,
   formatFileSize,
 }) {
-  const fileUrl = `http://localhost:5000${message.filePath}`;
+  const fileUrl = `${SERVER_URL}${message.filePath}`;
 
   if (message.mimeType?.startsWith("image/")) {
     return (

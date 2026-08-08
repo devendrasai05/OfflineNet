@@ -1,3 +1,5 @@
+import { SERVER_URL } from "../../config";
+
 function formatFileSize(bytes = 0) {
   if (bytes < 1024) return `${bytes} B`;
 
@@ -9,10 +11,7 @@ function formatFileSize(bytes = 0) {
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   }
 
-  return `${(
-    bytes /
-    (1024 * 1024 * 1024)
-  ).toFixed(2)} GB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
 function FilePreviewModal({
@@ -24,51 +23,29 @@ function FilePreviewModal({
 }) {
   if (!isOpen || !document) return null;
 
-  const fileUrl = `http://localhost:5000/uploads/${document.filePath
+  const fileUrl = `${SERVER_URL}/uploads/${document.filePath
     .split("\\")
     .pop()}`;
 
-  const extension = document.fileName
-    ?.split(".")
-    .pop()
-    ?.toLowerCase();
+  const extension = document.fileName?.split(".").pop()?.toLowerCase();
 
-  const imageTypes = [
-    "jpg",
-    "jpeg",
-    "png",
-    "gif",
-    "webp",
-    "bmp",
-  ];
+  const imageTypes = ["jpg", "jpeg", "png", "gif", "webp", "bmp"];
 
   const pdfTypes = ["pdf"];
 
   const textTypes = ["txt"];
 
-  const canDelete=
-  currentUser &&
-  (
-    currentUser.role==="ADMIN" ||
-    currentUser.id===document.uploader.id
-  );
+  const canDelete =
+    currentUser &&
+    (currentUser.role === "ADMIN" || currentUser.id === document.uploader.id);
 
   return (
-    <div
-      className="preview-overlay"
-      onClick={onClose}
-    >
-      <div
-        className="preview-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="preview-overlay" onClick={onClose}>
+      <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
         <div className="preview-header">
           <h2>{document.title}</h2>
 
-          <button
-            className="preview-close"
-            onClick={onClose}
-          >
+          <button className="preview-close" onClick={onClose}>
             ✕
           </button>
         </div>
@@ -105,9 +82,7 @@ function FilePreviewModal({
                 <div className="preview-unavailable">
                   <h3>No Preview Available</h3>
 
-                  <p>
-                    This file type cannot be previewed.
-                  </p>
+                  <p>This file type cannot be previewed.</p>
                 </div>
               )}
           </div>
@@ -117,41 +92,29 @@ function FilePreviewModal({
 
             <div className="preview-info-card">
               <span>Type</span>
-              <strong>
-                {extension?.toUpperCase()}
-              </strong>
+              <strong>{extension?.toUpperCase()}</strong>
             </div>
 
             <div className="preview-info-card">
               <span>Category</span>
-              <strong>
-                {document.category}
-              </strong>
+              <strong>{document.category}</strong>
             </div>
 
             <div className="preview-info-card">
               <span>Uploaded By</span>
-              <strong>
-                {document.uploader.username}
-              </strong>
+              <strong>{document.uploader.username}</strong>
             </div>
 
             <div className="preview-info-card">
               <span>Size</span>
-              <strong>
-                {formatFileSize(
-                  document.fileSize
-                )}
-              </strong>
+              <strong>{formatFileSize(document.fileSize)}</strong>
             </div>
 
             {document.createdAt && (
               <div className="preview-info-card">
                 <span>Uploaded</span>
                 <strong>
-                  {new Date(
-                    document.createdAt
-                  ).toLocaleDateString()}
+                  {new Date(document.createdAt).toLocaleDateString()}
                 </strong>
               </div>
             )}
@@ -159,34 +122,31 @@ function FilePreviewModal({
         </div>
 
         <div className="preview-actions">
-  <button
-    className="cancel-button"
-    onClick={onClose}
-  >
-    Close
-  </button>
+          <button className="cancel-button" onClick={onClose}>
+            Close
+          </button>
 
-  {canDelete&&(
-  <button
-    className="delete-button"
-    onClick={()=>{
-      if(window.confirm("Delete this document?"))
-        onDelete(document.id);
-    }}
-  >
-    Delete
-  </button>
-)}
+          {canDelete && (
+            <button
+              className="delete-button"
+              onClick={() => {
+                if (window.confirm("Delete this document?"))
+                  onDelete(document.id);
+              }}
+            >
+              Delete
+            </button>
+          )}
 
-  <a
-    href={fileUrl}
-    target="_blank"
-    rel="noreferrer"
-    className="download-button"
-  >
-    Download
-  </a>
-</div>
+          <a
+            href={fileUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="download-button"
+          >
+            Download
+          </a>
+        </div>
       </div>
     </div>
   );

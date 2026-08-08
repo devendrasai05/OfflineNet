@@ -6,9 +6,10 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
+import { API_URL } from "../../config";
+
 import "../../styles/admin.css";
 
-const API_URL = "http://localhost:5000/api";
 
 function Admin() {
   const [stats, setStats] = useState(null);
