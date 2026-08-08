@@ -18,9 +18,20 @@ async function startOfflineNet() {
 
       const host = await window.offlineNet.discoverHost();
 
-      console.log("🌐 Discovered OfflineNet host:", host.address);
+      if (host.isLocalHost) {
+        const localServerURL = "http://localhost:5000";
 
-      setServerURL(host.address);
+        console.log(
+          "🏠 This laptop is the OfflineNet host:",
+          localServerURL
+        );
+
+        setServerURL(localServerURL);
+      } else {
+        console.log("🌐 Discovered OfflineNet host:", host.address);
+
+        setServerURL(host.address);
+      }
     } else {
       console.log(
         "ℹ️ Electron discovery unavailable. Using current browser host."

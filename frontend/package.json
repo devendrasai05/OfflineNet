@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "npm run build && electron-builder --win portable"
   },
   "keywords": [
     "electron",
@@ -18,10 +19,28 @@
   ],
   "author": "Devendra Sai K",
   "license": "ISC",
+  "build": {
+    "appId": "com.offlinenet.app",
+    "productName": "OfflineNet",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js",
+      "discovery.js",
+      "backend.js"
+    ],
+    "win": {
+      "target": "portable"
+    }
+  },
   "type": "commonjs",
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.3",
     "electron": "^43.1.1",
+    "electron-builder": "^26.15.3",
     "vite": "^8.1.5"
   },
   "dependencies": {

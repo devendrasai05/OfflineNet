@@ -1,6 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
+const path = require("path");
 
 const { discoverOfflineNetHost } = require("./discovery");
+const { startBackend, stopBackend } = require("./backend");
+
+let backendStarted = false;
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -8,13 +12,17 @@ function createWindow() {
     height: 700,
     title: "OfflineNet",
     webPreferences: {
-      preload: require("path").join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
-  win.loadURL("http://localhost:5173");
+  if (app.isPackaged) {
+    win.loadFile(path.join(__dirname, "dist", "index.html"));
+  } else {
+    win.loadURL("http://localhost:5173");
+  }
 }
 
 ipcMain.handle("discover-host", async () => {
@@ -23,11 +31,25 @@ ipcMain.handle("discover-host", async () => {
 
     console.log("✅ OfflineNet host discovered:", host);
 
-    return host;
+    return {
+      ...host,
+      isLocalHost: false,
+    };
   } catch (error) {
-    console.error("❌ OfflineNet host discovery failed:", error);
+    console.log("ℹ️ No existing OfflineNet host found.");
+    console.log("🚀 This laptop will become the OfflineNet host.");
 
-    throw error;
+    if (!backendStarted) {
+      startBackend();
+      backendStarted = true;
+    }
+
+    return {
+      host: null,
+      port: null,
+      address: null,
+      isLocalHost: true,
+    };
   }
 });
 
@@ -42,6 +64,8 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
+  stopBackend();
+
   if (process.platform !== "darwin") {
     app.quit();
   }
