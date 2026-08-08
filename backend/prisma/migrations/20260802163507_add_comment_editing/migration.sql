@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "public"."Comment" ADD COLUMN     "edited" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

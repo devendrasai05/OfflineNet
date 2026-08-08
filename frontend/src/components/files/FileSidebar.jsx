@@ -1,16 +1,13 @@
 import {
   FaFolder,
-  FaClock,
+  FaCloudUploadAlt,
   FaFileAlt,
   FaImage,
   FaMusic,
   FaVideo,
 } from "react-icons/fa";
 
-function FileSidebar({
-  activeFilter,
-  onFilterChange,
-}) {
+function FileSidebar({ activeFilter, onFilterChange }) {
   const items = [
     {
       id: "all",
@@ -18,9 +15,9 @@ function FileSidebar({
       label: "All Files",
     },
     {
-      id: "recent",
-      icon: <FaClock />,
-      label: "Recent",
+      id: "upload",
+      icon: <FaCloudUploadAlt />,
+      label: "Upload",
     },
     {
       id: "documents",
@@ -46,25 +43,30 @@ function FileSidebar({
 
   return (
     <div className="file-sidebar">
-      <h2 className="file-sidebar-title">
-        File Explorer
-      </h2>
+      <div className="file-sidebar-header">
+        <div className="file-sidebar-icon">
+          <FaFolder />
+        </div>
+
+        <div>
+          <h2 className="file-sidebar-title">File Explorer</h2>
+
+          <p className="file-sidebar-subtitle">Browse shared documents</p>
+        </div>
+      </div>
 
       <div className="file-sidebar-menu">
         {items.map((item) => (
           <button
             key={item.id}
             className={`file-sidebar-item ${
-              activeFilter === item.id
-                ? "active"
-                : ""
+              activeFilter === item.id ? "active" : ""
             }`}
-            onClick={() =>
-              onFilterChange(item.id)
-            }
+            onClick={() => onFilterChange(item.id)}
           >
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
+            <span className="sidebar-item-icon">{item.icon}</span>
+
+            <span className="sidebar-item-label">{item.label}</span>
           </button>
         ))}
       </div>

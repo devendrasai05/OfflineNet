@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 
+import UploadWorkspace from "../../components/files/UploadWorkspace";
 import WorkspaceLayout from "../../components/layout/WorkspaceLayout";
 import FileSidebar from "../../components/files/FileSidebar";
 import FileToolbar from "../../components/files/FileToolbar";
-import UploadModal from "../../components/files/UploadModal";
 import DocumentCard from "../../components/files/DocumentCard";
 import FilePreviewModal from "../../components/files/FilePreviewModal";
 
@@ -12,6 +12,7 @@ import "../../styles/files.css";
 import {
   getDocuments,
   uploadDocument,
+  deleteDocument,
 } from "../../services/sharedDocument.service";
 
 const categories = [
@@ -27,16 +28,18 @@ function Files() {
 
   const [search, setSearch] = useState("");
 
-  const [showUploadModal, setShowUploadModal] = useState(false);
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Notes");
   const [file, setFile] = useState(null);
 
+  const [activeView, setActiveView] = useState("files");
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+  const[currentUser]=useState(
+  JSON.parse(localStorage.getItem("offlinenet-user"))
+);
 
   const loadDocuments = async () => {
     try {
@@ -74,14 +77,30 @@ function Files() {
       setCategory("Notes");
       setFile(null);
 
-      setShowUploadModal(false);
-
       await loadDocuments();
+
+      setActiveView("files");
+      setActiveFilter("all");
 
       alert("Document uploaded successfully.");
     } catch (error) {
       console.error(error);
       alert("Upload failed.");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteDocument(id);
+
+      await loadDocuments();
+
+      closePreview();
+
+      alert("Document deleted successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete document.");
     }
   };
 
@@ -157,7 +176,14 @@ function Files() {
       sidebar={
         <FileSidebar
           activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
+          onFilterChange={(value) => {
+            if (value === "upload") {
+              setActiveView("upload");
+            } else {
+              setActiveView("files");
+              setActiveFilter(value);
+            }
+          }}
         />
       }
       sidebarWidth="260px"
@@ -171,51 +197,50 @@ function Files() {
           </div>
         </div>
 
-        <FileToolbar
-          search={search}
-          setSearch={setSearch}
-          onUploadClick={() => setShowUploadModal(true)}
-        />
+        {activeView === "files" && (
+          <FileToolbar search={search} setSearch={setSearch} />
+        )}
 
-        <div className="documents-grid">
-          {filteredDocuments.length === 0 ? (
-            <div className="empty-documents">
-              <h3>No documents found</h3>
-
-              <p>Upload a document to get started.</p>
-            </div>
-          ) : (
-            filteredDocuments.map((document) => (
-              <DocumentCard
-                key={document.id}
-                document={document}
-                onClick={() => openPreview(document)}
-              />
-            ))
-          )}
-        </div>
-
-        <UploadModal
-          isOpen={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          title={title}
-          setTitle={setTitle}
-          description={description}
-          setDescription={setDescription}
-          category={category}
-          setCategory={setCategory}
-          file={file}
-          setFile={setFile}
-          categories={categories}
-          onSubmit={handleUpload}
-        />
+        {activeView === "upload" ? (
+          <UploadWorkspace
+            title={title}
+            setTitle={setTitle}
+            description={description}
+            setDescription={setDescription}
+            category={category}
+            setCategory={setCategory}
+            file={file}
+            setFile={setFile}
+            categories={categories}
+            onSubmit={handleUpload}
+          />
+        ) : (
+          <div className="documents-grid">
+            {filteredDocuments.length === 0 ? (
+              <div className="empty-documents">
+                <h3>No documents found</h3>
+                <p>Upload a document to get started.</p>
+              </div>
+            ) : (
+              filteredDocuments.map((document) => (
+                <DocumentCard
+                  key={document.id}
+                  document={document}
+                  onClick={() => openPreview(document)}
+                />
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       <FilePreviewModal
-        isOpen={showPreview}
-        onClose={closePreview}
-        document={selectedDocument}
-      />
+  isOpen={showPreview}
+  onClose={closePreview}
+  document={selectedDocument}
+  currentUser={currentUser}
+  onDelete={handleDelete}
+/>
     </WorkspaceLayout>
   );
 }

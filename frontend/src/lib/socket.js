@@ -8,10 +8,9 @@ export const socket = io(SOCKET_URL, {
 });
 
 export const connectSocket = (token) => {
-  socket.auth = {
-    token,
-  };
+  console.log("connectSocket() called");
 
+  socket.auth = { token };
   socket.connect();
 };
 

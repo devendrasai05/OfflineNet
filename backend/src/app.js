@@ -7,7 +7,9 @@ import userRoutes from "./routes/user.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import sharedDocumentRoutes from "./routes/sharedDocument.routes.js";
-
+import forumRoutes from "./routes/forum.routes.js";
+import commentRoutes from "./routes/comment.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
@@ -31,5 +33,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/shared-documents", sharedDocumentRoutes);
+app.use("/api/forum", forumRoutes);
+app.use("/api/comments", commentRoutes);
+app.use("/api/admin", adminRoutes);
 
 export default app;

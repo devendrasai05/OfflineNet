@@ -1,16 +1,19 @@
 function ProfileSettings() {
   return (
-    <div className="settings-content">
-      <h1>Profile</h1>
+    <div className="settings-section">
+      <div className="settings-section-header">
+        <h1>Profile</h1>
+        <p>Manage your OfflineNet profile information.</p>
+      </div>
 
       <div className="settings-card">
-        <label>Username</label>
-        <input type="text" placeholder="Username" />
+        <label htmlFor="username">Username</label>
+        <input id="username" type="text" placeholder="Username" />
 
-        <label>Email</label>
-        <input type="email" placeholder="Email" />
+        <label htmlFor="email">Email</label>
+        <input id="email" type="email" placeholder="Email" />
 
-        <button>Save Changes</button>
+        <button type="button">Save Changes</button>
       </div>
     </div>
   );

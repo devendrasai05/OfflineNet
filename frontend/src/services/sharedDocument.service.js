@@ -27,3 +27,11 @@ export const uploadDocument = async (formData) => {
 
   return response.data.document;
 };
+
+export const deleteDocument=async(id)=>{
+  await axios.delete(`${API_URL}/${id}`,{
+    headers:{
+      Authorization:`Bearer ${getToken()}`,
+    },
+  });
+};

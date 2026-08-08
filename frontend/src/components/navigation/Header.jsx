@@ -18,13 +18,12 @@ function Header() {
       </div>
 
       <div className="header-actions">
-        <span className="header-user">
-          Welcome, {user?.name}
-        </span>
+        <div className="header-user">
+          <span className="header-user-label">Welcome</span>
+          <span className="header-user-name">{user?.name}</span>
+        </div>
 
-        <Button onClick={handleLogout}>
-          Logout
-        </Button>
+        <Button onClick={handleLogout}>Logout</Button>
       </div>
     </header>
   );

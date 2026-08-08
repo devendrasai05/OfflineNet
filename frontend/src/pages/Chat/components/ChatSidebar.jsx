@@ -8,75 +8,91 @@ function ChatSidebar({
   return (
     <aside className="chat-sidebar">
       <div className="chat-sidebar-header">
-        <h2>Conversations</h2>
+        <h2>💬 Conversations</h2>
+        <p>Stay connected with OfflineNet</p>
 
         <input
           className="chat-search"
           type="text"
-          placeholder="Search chats..."
+          placeholder="Search conversations..."
         />
       </div>
 
       <div className="chat-users">
-        {users.map((user) => (
-          <div
-            key={user.id}
-            className={`chat-user ${
-              selectedUser?.id === user.id ? "active" : ""
-            }`}
-            onClick={() => onSelectUser(user)}
-          >
-            <div className="chat-user-avatar">
-              {user.username.charAt(0).toUpperCase()}
-            </div>
+        {users.map((user) => {
+          const isOnline = onlineUsers.includes(user.id);
 
-            <div className="chat-user-details">
-              <div className="chat-user-top">
-                <h4>{user.username}</h4>
+          return (
+            <div
+              key={user.id}
+              className={`chat-user ${
+                selectedUser?.id === user.id ? "active" : ""
+              }`}
+              onClick={() => onSelectUser(user)}
+            >
+              <div className="chat-user-avatar-wrapper">
+                <div className="chat-user-avatar">
+                  {user.username.charAt(0).toUpperCase()}
+                </div>
 
-                {user.unreadCount > 0 && (
-                  <span className="unread-badge">
-                    {user.unreadCount}
-                  </span>
-                )}
-              </div>
-
-              <div className="chat-user-status">
                 <span
-                  className={
-                    onlineUsers.includes(user.id)
-                      ? "status-dot online"
-                      : "status-dot offline"
-                  }
+                  className={`status-dot ${isOnline ? "online" : "offline"}`}
                 />
-
-                <span>
-                  {onlineUsers.includes(user.id)
-                    ? "Online"
-                    : "Offline"}
-                </span>
               </div>
 
-              <p className="chat-user-subtitle">
-                {user.lastMessage ? (
-                  <>
-                    {user.lastMessageSenderId === currentUser?.id && (
-                      <strong>You: </strong>
-                    )}
+              <div className="chat-user-details">
+                <div className="chat-user-top">
+                  <h4>{user.username}</h4>
 
-                    {user.lastMessage}
-                  </>
-                ) : (
-                  "No messages yet"
-                )}
-              </p>
+                  {user.lastMessageTime && (
+                    <span className="chat-user-time">
+                      {new Date(user.lastMessageTime).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  )}
+                </div>
+
+                <p className="chat-user-subtitle">
+                  {user.lastMessage ? (
+                    <>
+                      {user.lastMessageSenderId === currentUser?.id && (
+                        <strong>You: </strong>
+                      )}
+                      {user.lastMessage}
+                    </>
+                  ) : (
+                    "No messages yet"
+                  )}
+                </p>
+
+                <div className="chat-user-bottom">
+                  <span
+                    className={`chat-user-status ${
+                      isOnline ? "online" : "offline"
+                    }`}
+                  >
+                    {isOnline ? "Online" : "Offline"}
+                  </span>
+
+                  {user.unreadCount > 0 && (
+                    <span className="unread-badge">
+                      {user.unreadCount}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="chat-sidebar-footer">
-        {users.length} conversation{users.length !== 1 ? "s" : ""}
+        <strong>OfflineNet Messenger</strong>
+        <span>
+          {users.length} Conversation{users.length !== 1 ? "s" : ""}
+        </span>
       </div>
     </aside>
   );

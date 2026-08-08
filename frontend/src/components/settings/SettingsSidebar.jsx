@@ -1,9 +1,9 @@
 import {
-  FaUser,
-  FaPalette,
   FaBell,
-  FaShieldAlt,
   FaInfoCircle,
+  FaPalette,
+  FaShieldAlt,
+  FaUser,
 } from "react-icons/fa";
 
 function SettingsSidebar({ activeSection, setActiveSection }) {
@@ -37,7 +37,9 @@ function SettingsSidebar({ activeSection, setActiveSection }) {
 
   return (
     <div className="settings-sidebar">
-      <h2 className="settings-title">Settings</h2>
+      <div className="settings-sidebar-header">
+        <h2>Settings</h2>
+      </div>
 
       <div className="settings-menu">
         {menuItems.map((item) => (
@@ -48,7 +50,7 @@ function SettingsSidebar({ activeSection, setActiveSection }) {
             }`}
             onClick={() => setActiveSection(item.id)}
           >
-            <span>{item.icon}</span>
+            <span className="settings-menu-icon">{item.icon}</span>
             <span>{item.label}</span>
           </button>
         ))}

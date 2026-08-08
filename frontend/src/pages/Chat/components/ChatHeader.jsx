@@ -18,41 +18,41 @@ function ChatHeader({ selectedUser, isTyping, onlineUsers }) {
   return (
     <header className="chat-header">
       <div className="chat-header-left">
-        <div className="chat-header-avatar">
-          {selectedUser.username.charAt(0).toUpperCase()}
+        <div className="chat-header-avatar-wrapper">
+          <div className="chat-header-avatar">
+            {selectedUser.username.charAt(0).toUpperCase()}
+          </div>
+
+          <span
+            className={`chat-header-status-dot ${
+              isOnline ? "online" : "offline"
+            }`}
+          />
         </div>
 
         <div className="chat-header-info">
           <h3>{selectedUser.username}</h3>
 
-          <div
-            className={`chat-status ${
-              isOnline ? "online" : "offline"
-            }`}
-          >
-            <span className="status-dot" />
-
-            <span>
-              {isTyping
-                ? "Typing..."
-                : isOnline
-                ? "Online"
-                : "Offline"}
-            </span>
-          </div>
+          <p className="chat-header-status">
+            {isTyping
+              ? "Typing..."
+              : isOnline
+              ? "Online"
+              : "Offline"}
+          </p>
         </div>
       </div>
 
       <div className="chat-header-actions">
-        <button disabled title="Voice Call (Coming Soon)">
+        <button className="icon-button" disabled title="Voice Call (Coming Soon)">
           <FaPhoneAlt />
         </button>
 
-        <button disabled title="Video Call (Coming Soon)">
+        <button className="icon-button" disabled title="Video Call (Coming Soon)">
           <FaVideo />
         </button>
 
-        <button title="More Options">
+        <button className="icon-button" title="More Options">
           <FaEllipsisV />
         </button>
       </div>

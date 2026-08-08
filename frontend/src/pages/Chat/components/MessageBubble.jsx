@@ -20,26 +20,18 @@ function MessageBubble({
   setEditingMessageId,
   handleDeleteMessage,
 }) {
+  const isMine = message.senderId === currentUser?.id;
+
   return (
-    <div
-      className={`message ${
-        message.senderId === currentUser?.id ? "sent" : "received"
-      }`}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "10px",
-        }}
-      >
+    <div className={`message ${isMine ? "sent" : "received"}`}>
+      <div className="message-content">
         {editingMessageId === message.id ? (
           <input
+            className="message-edit-input"
             type="text"
             value={editedText}
-            onChange={(e) => setEditedText(e.target.value)}
             autoFocus
+            onChange={(e) => setEditedText(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -50,46 +42,33 @@ function MessageBubble({
                 handleCancelEdit();
               }
             }}
-            style={{
-              flex: 1,
-              padding: "6px",
-            }}
           />
         ) : (
-          <span>
+          <div className="message-body">
             <ReplyMessage
               replyTo={message.replyTo}
               currentUser={currentUser}
               selectedUser={selectedUser}
             />
 
-            <div>
-              {message.messageType === "FILE" ? (
-                <FileMessage
-                  message={message}
-                  getFileIcon={getFileIcon}
-                  formatFileSize={formatFileSize}
-                />
-              ) : (
-                <>
-                  {message.message}
+            {message.messageType === "FILE" ? (
+              <FileMessage
+                message={message}
+                getFileIcon={getFileIcon}
+                formatFileSize={formatFileSize}
+              />
+            ) : (
+              <p className="message-text">
+                {message.message}
 
-                  {message.edited && (
-                    <span
-                      style={{
-                        marginLeft: "6px",
-                        fontSize: "11px",
-                        opacity: 0.7,
-                        fontStyle: "italic",
-                      }}
-                    >
-                      (edited)
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
-          </span>
+                {message.edited && (
+                  <span className="message-edited">
+                    (edited)
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
         )}
 
         <MessageMenu
@@ -104,23 +83,13 @@ function MessageBubble({
         />
       </div>
 
-      <small
-        style={{
-          display: "block",
-          marginTop: "6px",
-          fontSize: "11px",
-          opacity: 0.7,
-        }}
-      >
-        {formatTime(message.createdAt)}
+      <div className="message-footer">
+        <span>{formatTime(message.createdAt)}</span>
 
-        {message.senderId === currentUser?.id && (
-          <>
-            {" • "}
-            {message.seen ? "Seen" : "Sent"}
-          </>
+        {isMine && (
+          <span>{message.seen ? "Seen" : "Sent"}</span>
         )}
-      </small>
+      </div>
     </div>
   );
 }

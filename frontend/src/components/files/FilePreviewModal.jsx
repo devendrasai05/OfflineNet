@@ -19,6 +19,8 @@ function FilePreviewModal({
   isOpen,
   onClose,
   document,
+  currentUser,
+  onDelete,
 }) {
   if (!isOpen || !document) return null;
 
@@ -43,6 +45,13 @@ function FilePreviewModal({
   const pdfTypes = ["pdf"];
 
   const textTypes = ["txt"];
+
+  const canDelete=
+  currentUser &&
+  (
+    currentUser.role==="ADMIN" ||
+    currentUser.id===document.uploader.id
+  );
 
   return (
     <div
@@ -150,22 +159,34 @@ function FilePreviewModal({
         </div>
 
         <div className="preview-actions">
-          <button
-            className="cancel-button"
-            onClick={onClose}
-          >
-            Close
-          </button>
+  <button
+    className="cancel-button"
+    onClick={onClose}
+  >
+    Close
+  </button>
 
-          <a
-            href={fileUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="download-button"
-          >
-            Download
-          </a>
-        </div>
+  {canDelete&&(
+  <button
+    className="delete-button"
+    onClick={()=>{
+      if(window.confirm("Delete this document?"))
+        onDelete(document.id);
+    }}
+  >
+    Delete
+  </button>
+)}
+
+  <a
+    href={fileUrl}
+    target="_blank"
+    rel="noreferrer"
+    className="download-button"
+  >
+    Download
+  </a>
+</div>
       </div>
     </div>
   );

@@ -45,45 +45,30 @@ function getFileIcon(fileName = "") {
 }
 
 function formatSize(bytes = 0) {
-  if (bytes < 1024)
-    return `${bytes} B`;
+  if (bytes < 1024) return `${bytes} B`;
 
-  if (bytes < 1024 * 1024)
-    return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
 
   if (bytes < 1024 * 1024 * 1024)
-    return `${(bytes / (1024 * 1024)).toFixed(
-      2
-    )} MB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 
-  return `${(
-    bytes /
-    (1024 * 1024 * 1024)
-  ).toFixed(2)} GB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function DocumentCard({document, onClick}) {
+function DocumentCard({ document, onClick }) {
   const fileUrl = `http://localhost:5000/uploads/${document.filePath
     .split("\\")
     .pop()}`;
 
   return (
-    <div
-  className="document-card"
-  onClick={onClick}
->
+    <div className="document-card" onClick={onClick}>
       <div className="document-top">
-        <div className="document-icon">
-          {getFileIcon(document.fileName)}
-        </div>
+        <div className="document-icon">{getFileIcon(document.fileName)}</div>
 
         <div className="document-title">
           <h3>{document.title}</h3>
 
-          <p>
-            {document.description ||
-              "No description provided"}
-          </p>
+          <p>{document.description || "No description provided"}</p>
         </div>
       </div>
 
@@ -100,17 +85,15 @@ function DocumentCard({document, onClick}) {
       </div>
 
       <div className="document-footer">
-        <span className="file-size">
-          {formatSize(document.fileSize)}
-        </span>
+        <span className="file-size">{formatSize(document.fileSize)}</span>
 
         <a
-  href={fileUrl}
-  target="_blank"
-  rel="noreferrer"
-  className="download-button"
-  onClick={(e) => e.stopPropagation()}
->
+          href={fileUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="download-button"
+          onClick={(e) => e.stopPropagation()}
+        >
           <FaDownload />
           Download
         </a>

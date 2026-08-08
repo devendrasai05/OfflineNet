@@ -1,0 +1,28 @@
+:root {
+  --app-bg: #181818;
+  --panel-bg: #1f1f1f;
+  --card-bg: #262626;
+  --card-hover: #2d2d2d;
+
+  --border: #343434;
+
+  --accent: #3B82F6;
+  --accent-hover: #2563EB;
+
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+
+  --text: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+
+  --transition: 0.2s ease;
+}

@@ -1,6 +1,7 @@
 import {
   uploadSharedDocument,
   getAllSharedDocuments,
+  deleteSharedDocument,
 } from "../services/sharedDocument.service.js";
 
 export const uploadDocument = async (req, res) => {
@@ -56,4 +57,28 @@ export const getDocuments = async (req, res) => {
       message: "Failed to fetch documents.",
     });
   }
+};
+
+export const deleteDocument=async(req,res)=>{
+    try{
+        await deleteSharedDocument(Number(req.params.id),req.user);
+
+        res.json({
+            success:true,
+            message:"Document deleted successfully.",
+        });
+    }
+    catch(error){
+        console.error(error);
+
+        const status=
+            error.message==="Document not found."?404:
+            error.message==="Unauthorized."?403:
+            500;
+
+        res.status(status).json({
+            success:false,
+            message:error.message||"Failed to delete document.",
+        });
+    }
 };

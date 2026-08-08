@@ -3,11 +3,12 @@
 =================================== */
 
 .workspace-layout {
-    display: flex;
-    flex: 1;
-
-    min-height: 0;
-    overflow: hidden;
+  display: flex;
+  flex: 1;
+  gap: 24px;
+  padding: 24px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* ===================================

@@ -3,98 +3,73 @@ function FileMessage({
   getFileIcon,
   formatFileSize,
 }) {
+  const fileUrl = `http://localhost:5000${message.filePath}`;
+
   if (message.mimeType?.startsWith("image/")) {
     return (
-      <div>
+      <div className="image-message">
         <a
-          href={`http://localhost:5000${message.filePath}`}
+          href={fileUrl}
           target="_blank"
           rel="noopener noreferrer"
         >
           <img
-            src={`http://localhost:5000${message.filePath}`}
+            className="chat-image"
+            src={fileUrl}
             alt={message.fileName}
-            style={{
-              maxWidth: "250px",
-              maxHeight: "250px",
-              borderRadius: "8px",
-              marginBottom: "8px",
-              cursor: "pointer",
-            }}
           />
         </a>
 
-        <div
-          style={{
-            fontSize: "13px",
-            opacity: 0.8,
-          }}
-        >
-          🖼 {message.fileName}
+        <div className="chat-image-info">
+          <span className="chat-image-name">
+            {message.fileName}
+          </span>
+
+          <span className="chat-image-size">
+            {formatFileSize(message.fileSize)}
+          </span>
+
+          <a
+            href={fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="file-download-button"
+          >
+            Download
+          </a>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        border: "1px solid rgba(255,255,255,0.15)",
-        borderRadius: "10px",
-        padding: "12px",
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        background: "rgba(255,255,255,0.05)",
-        maxWidth: "320px",
-      }}
-    >
-      <div style={{ fontSize: "32px" }}>
+    <div className="file-message">
+      <div className="file-icon">
         {getFileIcon(message.mimeType, message.fileName)}
       </div>
 
-      <div style={{ flex: 1 }}>
-        <div
-          style={{
-            fontWeight: "600",
-            wordBreak: "break-word",
-          }}
-        >
+      <div className="file-details">
+        <div className="file-name">
           {message.fileName}
         </div>
 
-        <div
-          style={{
-            fontSize: "12px",
-            opacity: 0.7,
-            marginTop: "4px",
-          }}
-        >
-          {message.mimeType}
+        <div className="file-type">
+          {message.mimeType.split("/")[1]?.toUpperCase() || "FILE"}
         </div>
 
-        <div
-          style={{
-            fontSize: "12px",
-            opacity: 0.7,
-          }}
-        >
+        <div className="file-size">
           {formatFileSize(message.fileSize)}
         </div>
-      </div>
 
-      <a
-        href={`http://localhost:5000${message.filePath}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          textDecoration: "none",
-          fontSize: "22px",
-        }}
-        title="Download"
-      >
-        ⬇
-      </a>
+        <a
+          href={fileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="file-download-button"
+        >
+          ⬇ Download
+        </a>
+      </div>
     </div>
   );
 }

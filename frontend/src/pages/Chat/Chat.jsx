@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+
 import EmojiPicker from "emoji-picker-react";
+import { BsEmojiSmile } from "react-icons/bs";
+import { HiPaperClip } from "react-icons/hi2";
+import { IoSend } from "react-icons/io5";
 
 import { socket } from "../../lib/socket";
 import { useAuth } from "../../context/AuthContext";
@@ -297,13 +301,13 @@ function Chat() {
 
   // Auto-scroll
   useEffect(() => {
-  if (!messagesContainerRef.current) return;
+    if (!messagesContainerRef.current) return;
 
-  messagesContainerRef.current.scrollTo({
-    top: messagesContainerRef.current.scrollHeight,
-    behavior: "smooth",
-  });
-}, [messages]);
+    messagesContainerRef.current.scrollTo({
+      top: messagesContainerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   const formatTime = (date) => {
     return new Date(date).toLocaleTimeString([], {
@@ -450,159 +454,145 @@ function Chat() {
   };
 
   return (
-  <WorkspaceLayout
-    sidebar={
-      <ChatSidebar
-        users={users}
-        selectedUser={selectedUser}
-        currentUser={currentUser}
-        onlineUsers={onlineUsers}
-        onSelectUser={handleSelectUser}
-      />
-    }
-    sidebarWidth="340px"
-  >
-    <section className="chat-window">
-      <ChatHeader
-        selectedUser={selectedUser}
-        isTyping={isTyping}
-        onlineUsers={onlineUsers}
-      />
+    <WorkspaceLayout
+      sidebar={
+        <ChatSidebar
+          users={users}
+          selectedUser={selectedUser}
+          currentUser={currentUser}
+          onlineUsers={onlineUsers}
+          onSelectUser={handleSelectUser}
+        />
+      }
+      sidebarWidth="340px"
+    >
+      <section className="chat-window">
+        <ChatHeader
+          selectedUser={selectedUser}
+          isTyping={isTyping}
+          onlineUsers={onlineUsers}
+        />
 
-      <div
-  ref={messagesContainerRef}
-  className="chat-messages"
->
-        {!selectedUser ? (
-          <p>Select a user to start chatting.</p>
-        ) : (
-          <>
-            {messages.map((message) => (
-              <MessageBubble
-                key={message.id}
-                message={message}
-                currentUser={currentUser}
-                selectedUser={selectedUser}
-                editingMessageId={editingMessageId}
-                editedText={editedText}
-                setEditedText={setEditedText}
-                handleSaveEdit={handleSaveEdit}
-                handleCancelEdit={handleCancelEdit}
-                getFileIcon={getFileIcon}
-                formatFileSize={formatFileSize}
-                formatTime={formatTime}
-                openMenuId={openMenuId}
-                setOpenMenuId={setOpenMenuId}
-                setReplyingTo={setReplyingTo}
-                setEditingMessageId={setEditingMessageId}
-                handleDeleteMessage={handleDeleteMessage}
-              />
-            ))}
+        <div ref={messagesContainerRef} className="chat-messages">
+          {!selectedUser ? (
+            <p>Select a user to start chatting.</p>
+          ) : (
+            <>
+              {messages.map((message) => (
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                  currentUser={currentUser}
+                  selectedUser={selectedUser}
+                  editingMessageId={editingMessageId}
+                  editedText={editedText}
+                  setEditedText={setEditedText}
+                  handleSaveEdit={handleSaveEdit}
+                  handleCancelEdit={handleCancelEdit}
+                  getFileIcon={getFileIcon}
+                  formatFileSize={formatFileSize}
+                  formatTime={formatTime}
+                  openMenuId={openMenuId}
+                  setOpenMenuId={setOpenMenuId}
+                  setReplyingTo={setReplyingTo}
+                  setEditingMessageId={setEditingMessageId}
+                  handleDeleteMessage={handleDeleteMessage}
+                />
+              ))}
 
-            <div ref={messagesEndRef} />
-          </>
-        )}
-      </div>
+              <div ref={messagesEndRef} />
+            </>
+          )}
+        </div>
 
-      <div className="chat-input">
-        {replyingTo && (
-          <div className="reply-preview">
-            <div className="reply-preview-content">
-              <strong>Replying to</strong>
-              <p>{replyingTo.message}</p>
-            </div>
+        <div className="chat-composer">
+          {replyingTo && (
+            <div className="reply-preview">
+              <div className="reply-preview-content">
+                <strong>Replying to</strong>
+                <p>{replyingTo.message}</p>
+              </div>
 
-            <button
-              className="reply-cancel"
-              onClick={() => setReplyingTo(null)}
-            >
-              ✕
-            </button>
-          </div>
-        )}
-
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            alignItems: "center",
-            flex: 1,
-          }}
-        >
-          <button
-            ref={emojiButtonRef}
-            type="button"
-            onClick={toggleEmojiPicker}
-            disabled={!selectedUser}
-            className="chat-icon-button"
-          >
-            😊
-          </button>
-
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={!selectedUser}
-            className="chat-icon-button"
-          >
-            📎
-          </button>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            hidden
-            onChange={handleFileUpload}
-          />
-
-          {showEmojiPicker && (
-            <div
-              ref={emojiPickerRef}
-              style={{
-                position: "absolute",
-                bottom: "55px",
-                left: "0",
-                zIndex: 1000,
-                boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-              }}
-            >
-              <EmojiPicker
-                onEmojiClick={handleEmojiClick}
-                width={320}
-                height={400}
-              />
+              <button
+                className="reply-cancel"
+                onClick={() => setReplyingTo(null)}
+              >
+                ✕
+              </button>
             </div>
           )}
 
-          <input
-            type="text"
-            placeholder={
-              editingMessageId !== null
-                ? "Editing message... Press Enter to save, Esc to cancel"
-                : "Type a message..."
-            }
-            value={text}
-            onChange={(e) => handleInputChange(e.target.value)}
-            disabled={!selectedUser || editingMessageId !== null}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSend();
-              }
-            }}
-            style={{ flex: 1 }}
-          />
-        </div>
+          <div className="composer-row">
+            <div className="composer-input">
+              <button
+                ref={emojiButtonRef}
+                type="button"
+                className="chat-icon-button"
+                disabled={!selectedUser}
+                onClick={toggleEmojiPicker}
+              >
+                <BsEmojiSmile size={20} />
+              </button>
 
-        <button
-          onClick={handleSend}
-          disabled={!selectedUser || editingMessageId !== null}
-        >
-          Send
-        </button>
-      </div>
-    </section>
-  </WorkspaceLayout>
-);
+              <button
+                type="button"
+                className="chat-icon-button"
+                disabled={!selectedUser}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <HiPaperClip size={20} />
+              </button>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                hidden
+                onChange={handleFileUpload}
+              />
+
+              {showEmojiPicker && (
+                <div className="emoji-picker-wrapper">
+                  <EmojiPicker
+                    onEmojiClick={handleEmojiClick}
+                    width={320}
+                    height={400}
+                  />
+                </div>
+              )}
+
+              <input
+                className="composer-textbox"
+                type="text"
+                placeholder={
+                  editingMessageId !== null
+                    ? "Editing message..."
+                    : "Type a message..."
+                }
+                value={text}
+                disabled={!selectedUser || editingMessageId !== null}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSend();
+                  }
+                }}
+              />
+            </div>
+
+            <button
+              className="composer-send"
+              disabled={!selectedUser || editingMessageId !== null}
+              onClick={handleSend}
+            >
+              <>
+                <IoSend size={18} />
+              </>
+            </button>
+          </div>
+        </div>
+      </section>
+    </WorkspaceLayout>
+  );
 }
 
 export default Chat;

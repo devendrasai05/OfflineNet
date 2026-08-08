@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import http from "http";
 import { initializeSocket } from "./socket/socket.js";
 import app from "./app.js";
+import commentRoutes from "./routes/comment.routes.js";
 
 dotenv.config();
 

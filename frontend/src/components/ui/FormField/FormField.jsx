@@ -14,8 +14,8 @@ function FormField({
   return (
     <div className="form-field">
       <label className="form-field-label" htmlFor={id}>
-  {label}
-</label>
+        {label}
+      </label>
       <Input
         id={id}
         type={type}
@@ -25,11 +25,7 @@ function FormField({
         disabled={disabled}
       />
 
-      {error && (
-        <p className="form-field-error">
-          {error}
-        </p>
-      )}
+      {error && <p className="form-field-error">{error}</p>}
     </div>
   );
 }

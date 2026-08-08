@@ -58,28 +58,28 @@ export const initializeSocket = (server) => {
     socket.on(
       "send-message",
       async ({
-    receiverId,
-    message,
-    replyToId = null,
-    messageType = "TEXT",
-    fileName = null,
-    filePath = null,
-    fileSize = null,
-    mimeType = null,
-  }) => {
+        receiverId,
+        message,
+        replyToId = null,
+        messageType = "TEXT",
+        fileName = null,
+        filePath = null,
+        fileSize = null,
+        mimeType = null,
+      }) => {
         try {
           // Save message to database
           const savedMessage = await createMessage({
-  senderId: socket.user.id,
-  receiverId,
-  message,
-  replyToId,
-  messageType,
-  fileName,
-  filePath,
-  fileSize,
-  mimeType,
-});
+            senderId: socket.user.id,
+            receiverId,
+            message,
+            replyToId,
+            messageType,
+            fileName,
+            filePath,
+            fileSize,
+            mimeType,
+          });
 
           console.log("💾 Message saved:", savedMessage);
 

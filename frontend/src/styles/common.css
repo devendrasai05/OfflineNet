@@ -1,0 +1,52 @@
+.page-card{
+  background:var(--panel-bg);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+.section-title{
+  margin:0;
+  color:var(--text);
+  font-size:2rem;
+  font-weight:700;
+}
+
+.section-subtitle{
+  margin-top:8px;
+  color:var(--text-muted);
+  font-size:.95rem;
+}
+
+.icon-button{
+  width:40px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:none;
+  border-radius:var(--radius-sm);
+  background:var(--card-bg);
+  color:var(--text-secondary);
+  cursor:pointer;
+  transition:all var(--transition);
+}
+
+.icon-button:hover{
+  background:var(--primary);
+  color:#fff;
+}
+
+.primary-button{
+  border:none;
+  border-radius:var(--radius-sm);
+  background:var(--primary);
+  color:#fff;
+  cursor:pointer;
+  transition:all var(--transition);
+}
+
+.primary-button:hover{
+  background:var(--primary-hover);
+}

@@ -53,16 +53,12 @@ function Sidebar() {
                 to={item.path}
                 end={item.path === "/"}
                 className={({ isActive }) =>
-                  isActive
-                    ? "sidebar-link active"
-                    : "sidebar-link"
+                  isActive ? "sidebar-link active" : "sidebar-link"
                 }
               >
-                <span className="sidebar-icon">
-                  {item.icon}
-                </span>
+                <span className="sidebar-icon">{item.icon}</span>
 
-                <span>{item.label}</span>
+                <span className="sidebar-text">{item.label}</span>
               </NavLink>
             </li>
           ))}

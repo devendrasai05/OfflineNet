@@ -1,7 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
-
+import "./styles/theme.css";
+import "./styles/common.css";
 import App from "./App";
 
 import { AuthProvider } from "./context/AuthContext";
@@ -14,13 +15,13 @@ import "./styles/pages.css";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
-  <App />
-  <Toaster
-    position="bottom-right"
-    toastOptions={{
-      duration: 2000,
-    }}
-  />
-</AuthProvider>
-  </StrictMode>
+      <App />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 2000,
+        }}
+      />
+    </AuthProvider>
+  </StrictMode>,
 );

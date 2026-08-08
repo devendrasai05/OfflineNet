@@ -6,6 +6,7 @@ import upload from "../middleware/upload.middleware.js";
 import {
   uploadDocument,
   getDocuments,
+  deleteDocument,
 } from "../controllers/sharedDocument.controller.js";
 
 const router = express.Router();
@@ -19,6 +20,13 @@ router.post(
   authenticate,
   upload.single("file"),
   uploadDocument
+);
+
+// Delete a shared document
+router.delete(
+  "/:id",
+  authenticate,
+  deleteDocument
 );
 
 export default router;

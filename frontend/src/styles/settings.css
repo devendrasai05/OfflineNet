@@ -3,15 +3,19 @@
   flex-direction: column;
   height: 100%;
   padding: 24px 16px;
-  background: #202225;
-  border-right: 1px solid #2f3136;
+  background: transparent;
 }
 
-.settings-title {
+.settings-sidebar-header {
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.settings-sidebar-header h2 {
+  margin: 0;
+  color: var(--text);
   font-size: 22px;
   font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 24px;
 }
 
 .settings-menu {
@@ -27,28 +31,39 @@
   width: 100%;
   padding: 12px 16px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: transparent;
-  color: #b9bbbe;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: 0.2s;
+  transition: var(--transition);
   font-size: 15px;
+  text-align: left;
 }
 
 .settings-menu-item:hover {
-  background: #2f3136;
-  color: white;
+  background: var(--card-hover);
+  color: var(--text);
+  transform: translateX(3px);
 }
 
 .settings-menu-item.active {
-  background: #5865f2;
-  color: white;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+.settings-menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  font-size: 16px;
 }
 
 .settings-content {
-  padding: 40px;
   width: 100%;
-  color: white;
+  padding: 40px;
+  color: var(--text);
 }
 
 .settings-content h1 {
@@ -56,54 +71,79 @@
   font-size: 30px;
 }
 
+.settings-section {
+  width: 100%;
+}
+
+.settings-section-header {
+  margin-bottom: 24px;
+}
+
+.settings-section-header h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.settings-section-header p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
 .settings-card {
-  background: #202225;
-  border: 1px solid #2f3136;
-  border-radius: 14px;
-  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   max-width: 600px;
+  padding: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
 }
 
 .settings-card label {
-  color: #dcddde;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
 .settings-card input,
 .settings-card select {
-  background: #2f3136;
-  color: white;
-  border: 1px solid #40444b;
-  border-radius: 8px;
   padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  outline: none;
+  background: var(--app-bg);
+  color: var(--text);
+  transition: var(--transition);
 }
 
 .settings-card input:focus,
 .settings-card select:focus {
-  outline: none;
-  border-color: #5865f2;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 12%);
 }
 
 .settings-card button {
   align-self: flex-start;
   padding: 12px 20px;
   border: none;
-  border-radius: 8px;
-  background: #5865f2;
-  color: white;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: #fff;
   cursor: pointer;
   font-weight: 600;
-  transition: 0.2s;
+  transition: var(--transition);
 }
 
 .settings-card button:hover {
-  background: #4752c4;
+  background: var(--accent-hover);
+  transform: translateY(-1px);
 }
 
 .settings-card p {
   margin: 0;
-  color: #dcddde;
+  color: var(--text-secondary);
 }
